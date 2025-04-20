@@ -15,12 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['freelancer', 'client', 'admin'])->default('client');
-            $table->string('requested_role')->nullable();
+            $table->enum('role', ['client', 'developer', 'admin'])->default('client');
+            $table->enum('requested_role', ['client', 'developer', 'admin'])->nullable();
             $table->boolean('approved')->default(false);
-            $table->rememberToken();
             $table->timestamps();
         });
 
