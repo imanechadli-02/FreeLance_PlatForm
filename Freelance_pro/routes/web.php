@@ -23,6 +23,9 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 // Login Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+// Logout Routes
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 
 
 // Protected Routes

@@ -30,4 +30,14 @@ class LoginController extends Controller
             'email' => 'Les informations d’identification ne correspondent pas.',
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Déconnexion réussie.');
+    }
 }
