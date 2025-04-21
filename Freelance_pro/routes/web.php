@@ -9,6 +9,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/client/dashboard', function () {
+    return view('client.dashboard'); // or whatever view you want
+})->name('client.dashboard')->middleware('auth');
+
 // Registration Routes
 Route::get('/register', function () {
     return view('auth.register');
