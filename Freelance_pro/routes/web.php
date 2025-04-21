@@ -1,15 +1,29 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;  // Import RegisterController
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\LoginController;
+use App\Http\Middleware\ApprovedMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Registration Routes
 Route::get('/register', function () {
-    return view('auth.register'); 
+    return view('auth.register');
 })->name('register');
 
-// Corrected route for handling the POST request
-Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+// Login Routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
+
+// Protected Routes
+Route::middleware(['auth', ApprovedMiddleware::class])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});

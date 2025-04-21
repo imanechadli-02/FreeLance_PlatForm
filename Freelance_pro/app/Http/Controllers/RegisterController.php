@@ -37,7 +37,6 @@ class RegisterController extends Controller
         // Log user creation
 
         // Redirect with success message
-        return response()->json(['message' => 'Compte créé avec succès !', 'user' => $user]);
-
+        return redirect('/login')->with('success', 'Compte créé avec succès ! Connectez-vous maintenant.');
     }
 }
