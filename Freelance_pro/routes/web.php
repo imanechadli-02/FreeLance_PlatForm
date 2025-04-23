@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;
+// use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\ApprovedMiddleware;
 
 Route::get('/', function () {
@@ -18,7 +19,7 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+Route::post('/register', [LoginController::class, 'register'])->name('register.post');
 
 // Login Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -26,7 +27,14 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 // Logout Routes
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
+// Profile Route
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', function () {
+        return view('client.profile');
+    })->name('profile');
+    
+    Route::put('/profile', [LoginController::class, 'updateProfile'])->name('profile.update');
+});
 
 // Protected Routes
 Route::middleware(['auth', ApprovedMiddleware::class])->group(function () {
