@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-
 class LoginController extends Controller
 {
     public function register(Request $request)
@@ -20,8 +19,6 @@ class LoginController extends Controller
             'role' => 'required|in:client,developer,admin',
         ]);
 
-
-        // User creation logic
         $role = $request->role;
         if (in_array($role, ['developer', 'admin'])) {
             $role = 'client';
@@ -36,18 +33,13 @@ class LoginController extends Controller
             'approved' => false,
         ]);
 
-        // Log user creation
-
-        // Redirect with success message
         return redirect('/login')->with('success', 'Compte créé avec succès ! Connectez-vous maintenant.');
-
-        
     }
+
     public function showLoginForm()
     {
         return view('auth.login');
     }
-
 
     public function login(Request $request)
     {
@@ -58,12 +50,23 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/client/dashboard'); // redirect to client dashboard
+            return $this->authenticated($request, Auth::user());
         }
 
         return back()->withErrors([
-            'email' => 'Les informations d identification ne correspondent pas.',
+            'email' => 'Les informations d\'identification ne correspondent pas.',
         ]);
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->requested_role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->requested_role === 'developer') {
+            return redirect()->route('developer.dashboard');
+        } else {
+            return redirect()->route('client.dashboard');
+        }
     }
 
     public function logout(Request $request)
@@ -79,7 +82,7 @@ class LoginController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -90,22 +93,17 @@ class LoginController extends Controller
             'profil_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        // Handle profile picture upload
         if ($request->hasFile('profil_picture')) {
-            // Delete old profile picture if exists
             if ($user->profil_picture) {
                 Storage::delete('public/' . $user->profil_picture);
             }
-            
-            // Store new profile picture
+
             $path = $request->file('profil_picture')->store('profile-pictures', 'public');
             $validated['profil_picture'] = $path;
         }
 
         $user->update($validated);
 
-        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+        return redirect()->route('profile')->with('success', 'Profil mis à jour avec succès !');
     }
-
 }
- 
