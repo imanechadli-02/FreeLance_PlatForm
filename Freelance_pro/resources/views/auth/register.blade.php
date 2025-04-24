@@ -183,7 +183,7 @@
 
       <p class="mt-8 text-center text-gray-600">
         Already have an account? 
-        <a  class="text-indigo-600 hover:text-indigo-700 font-medium">Sign in</a>
+        <a href="/login" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign in</a>
       </p>
     </div>
   </div>

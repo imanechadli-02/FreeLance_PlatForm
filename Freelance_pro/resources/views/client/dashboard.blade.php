@@ -73,15 +73,11 @@
                     </button>
                     
                     <!-- Dropdown Menu -->
-                    <div id="userMenu" class="hidden absolute bottom-0 left-16 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                        <div class="py-2">
-                            <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <div id="userMenu" class="hidden absolute bottom-0 left-16 w-48 bg-white rounded-lg shadow-l                            <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+e') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                Profile
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                                           <form method="POST" action="{{ route('logout') }}" class="w-full">
                                 @csrf
                                 <button type="submit" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,12 +90,13 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="ml-64 p-8">
-        <!-- Header -->
+ogout') }}">
+                            <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit">Déconnexion</button>
+</form>
+    </div>
+ <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Welcome back, Sarah!</h1>
