@@ -5,7 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 // use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\ApprovedMiddleware;
-// use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ServiceController;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -49,6 +49,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users', [AdminController::class, 'index'])->name('users.index');
         Route::post('/users/{user}/approve', [AdminController::class, 'approve'])->name('users.approve');
         Route::delete('/users/{user}', [AdminController::class, 'delete'])->name('users.delete');
+    });
+
+    // Service Management Routes
+    Route::prefix('admin')->group(function () {
+        Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+        Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+        Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+        Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+        Route::put('/services/{service}', [ServiceController::class, 'update'])->name('services.update');
+        Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     });
 });
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    
     public function index(Request $request)
     {
         $query = User::query();
@@ -56,4 +57,6 @@ class AdminController extends Controller
         $user->delete();
         return back()->with('success', 'User deleted successfully');
     }
+
+
 }
