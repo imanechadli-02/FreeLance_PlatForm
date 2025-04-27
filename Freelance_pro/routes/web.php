@@ -36,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard Routes
     Route::get('/client/dashboard', function () {
-        return view('client.dashboard');
+        $projects = auth()->user()->projects()->latest()->get();
+        return view('client.dashboard', compact('projects'));
     })->name('client.dashboard');
     Route::get('/developer/dashboard', function () {
         return view('developer.dashboard');

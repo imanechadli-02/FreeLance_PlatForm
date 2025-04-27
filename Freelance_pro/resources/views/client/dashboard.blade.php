@@ -82,9 +82,9 @@
                 <h1 class="text-2xl font-bold text-gray-800">Welcome back, Sarah!</h1>
                 <p class="text-gray-600">Here's an overview of your projects and activities</p>
             </div>
-            <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <a href="/client/projects" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                 New Project
-            </button>
+            </a>
         </div>
 
         <!-- Stats Overview -->
@@ -93,7 +93,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Active Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">3</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', '!=', 'completed')->count() }}</h3>
                     </div>
                     <div class="bg-blue-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Completed Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">8</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', 'completed')->count() }}</h3>
                     </div>
                     <div class="bg-green-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Total Investment</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$24,500</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">${{ number_format($projects->sum('budget'), 2) }}</h3>
                     </div>
                     <div class="bg-purple-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,117 +146,65 @@
         <!-- Active Projects -->
         <div class="mb-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">Active Projects</h2>
-                <button class="text-indigo-600 hover:text-indigo-700">View all</button>
+                <h2 class="text-xl font-bold text-gray-800">All My Projects</h2>
+                <a href="/client/projects" class="text-indigo-600 hover:text-indigo-700">View all</a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Project Card 1 -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                             alt="Project" 
-                             class="w-full h-48 object-cover">
-                        <div class="absolute top-4 right-4">
-                            <span class="px-3 py-1 text-sm font-medium text-green-600 bg-green-50 rounded-full">
-                                In Progress
-                            </span>
+                @if($projects->count() > 0)
+                    @foreach($projects as $project)
+                        <!-- Project Card -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                                     alt="Project" 
+                                     class="w-full h-48 object-cover">
+                                <div class="absolute top-4 right-4">
+                                    <span class="px-3 py-1 text-sm font-medium 
+                                        @if($project->status == 'open') text-green-600 bg-green-50
+                                        @elseif($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                        @elseif($project->status == 'completed') text-purple-600 bg-purple-50
+                                        @else text-yellow-600 bg-yellow-50
+                                        @endif rounded-full">
+                                        {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $project->title }}</h3>
+                                <p class="text-gray-600 mb-4">{{ Str::limit($project->description, 100) }}</p>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        @if($project->developer)
+                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                                                 alt="Developer" 
+                                                 class="w-8 h-8 rounded-full mr-2">
+                                            <span class="text-sm text-gray-600">{{ $project->developer->name }}</span>
+                                        @else
+                                            <span class="text-sm text-gray-600">No developer assigned</span>
+                                        @endif
+                                    </div>
+                                    <span class="text-sm text-gray-500">Due: {{ $project->deadline->format('M d, Y') }}</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Budget</span>
+                                        <span class="text-gray-800 font-medium">${{ number_format($project->budget, 2) }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2">
+                                        <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $project->progress ?? 0 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    @endforeach
+                @else
+                    <div class="col-span-3 bg-white rounded-2xl shadow-lg p-6 text-center">
+                        <p class="text-gray-600">You don't have any active projects yet.</p>
+                        <a href="/client/projects" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            Create Your First Project
+                        </a>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">E-commerce Website Redesign</h3>
-                        <p class="text-gray-600 mb-4">Modernizing the online shopping experience with improved UI/UX and performance optimizations.</p>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                     alt="Developer" 
-                                     class="w-8 h-8 rounded-full mr-2">
-                                <span class="text-sm text-gray-600">John Smith</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Due in 2 weeks</span>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Progress</span>
-                                <span class="text-gray-800 font-medium">65%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-indigo-600 h-2 rounded-full" style="width: 65%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project Card 2 -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                             alt="Project" 
-                             class="w-full h-48 object-cover">
-                        <div class="absolute top-4 right-4">
-                            <span class="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
-                                Review Phase
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">Mobile App UI Design</h3>
-                        <p class="text-gray-600 mb-4">Creating a modern and intuitive user interface for the fitness tracking mobile app.</p>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                     alt="Designer" 
-                                     class="w-8 h-8 rounded-full mr-2">
-                                <span class="text-sm text-gray-600">Sarah Wilson</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Due in 1 week</span>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Progress</span>
-                                <span class="text-gray-800 font-medium">85%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-indigo-600 h-2 rounded-full" style="width: 85%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project Card 3 -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                             alt="Project" 
-                             class="w-full h-48 object-cover">
-                        <div class="absolute top-4 right-4">
-                            <span class="px-3 py-1 text-sm font-medium text-yellow-600 bg-yellow-50 rounded-full">
-                                Planning
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">SEO Optimization</h3>
-                        <p class="text-gray-600 mb-4">Improving website visibility and search engine rankings through comprehensive SEO strategies.</p>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                     alt="Marketer" 
-                                     class="w-8 h-8 rounded-full mr-2">
-                                <span class="text-sm text-gray-600">Michael Brown</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Due in 3 weeks</span>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Progress</span>
-                                <span class="text-gray-800 font-medium">25%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-indigo-600 h-2 rounded-full" style="width: 25%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
 
