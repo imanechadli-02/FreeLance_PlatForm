@@ -165,4 +165,30 @@ class ProjectController extends Controller
                 ->with('error', 'An error occurred while deleting the project.');
         }
     }
+
+    public function apply(Project $project)
+    {
+        try {
+            // Check if project is open
+            if ($project->status !== 'open') {
+                return redirect()->back()->with('error', 'This project is no longer open for applications.');
+            }
+
+            // Check if developer has already applied
+            if ($project->developer_id === auth()->id()) {
+                return redirect()->back()->with('error', 'You have already applied for this project.');
+            }
+
+            // Update project with developer
+            $project->update([
+                'developer_id' => auth()->id(),
+                'status' => 'in_progress'
+            ]);
+
+            return redirect()->back()->with('success', 'Successfully applied for the project!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while applying for the project.');
+        }
+    }
 } 

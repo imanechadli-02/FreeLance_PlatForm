@@ -41,7 +41,8 @@ Route::middleware(['auth'])->group(function () {
         return view('client.dashboard', compact('projects', 'services'));
     })->name('client.dashboard');
     Route::get('/developer/dashboard', function () {
-        return view('developer.dashboard');
+        $projects = \App\Models\Project::latest()->get();
+        return view('developer.dashboard', compact('projects'));
     })->name('developer.dashboard');
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
@@ -82,6 +83,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/services/{service}', [ServiceController::class, 'update'])->name('services.update');
         Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     });
+
+    // Developer Project Routes
+    Route::post('/projects/{project}/apply', [ProjectController::class, 'apply'])->name('projects.apply');
 });
 
 // Approved User Routes

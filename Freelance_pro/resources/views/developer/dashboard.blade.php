@@ -168,63 +168,112 @@
             <!-- Active Projects -->
             <div class="bg-white rounded-2xl shadow-sm" data-aos="fade-up">
                 <div class="p-6 border-b border-gray-100">
-                    <h2 class="text-lg font-semibold text-gray-900">Active Projects</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-gray-900">Available Projects</h2>
+                        <span class="px-3 py-1 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-full">
+                            {{ $projects->count() }} Projects
+                        </span>
+                    </div>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-6">
-                        <!-- Project 1 -->
-                        <div class="flex items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="font-medium text-gray-900">E-commerce Website</h3>
-                                    <span class="px-2 py-1 text-xs font-medium text-green-600 bg-green-50 rounded-full">On Track</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-4">Building a modern e-commerce platform with React and Node.js</p>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span class="text-sm text-gray-500">75% Complete</span>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Due in 2 weeks</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-1 gap-6">
+                        @forelse($projects as $project)
+                            <div class="group {{ $project->status == 'in_progress' && $project->developer_id == auth()->id() ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500' : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200' }} rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                                <div class="p-6">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="text-xl font-bold {{ $project->status == 'in_progress' && $project->developer_id == auth()->id() ? 'text-blue-800' : 'text-gray-900' }} group-hover:text-indigo-600 transition-colors duration-200">{{ $project->title }}</h3>
+                                                <span class="px-3 py-1 text-sm font-semibold rounded-full
+                                                    @if($project->status == 'open') bg-emerald-100 text-emerald-700 border border-emerald-200
+                                                    @elseif($project->status == 'in_progress' && $project->developer_id == auth()->id()) bg-blue-100 text-blue-700 border border-blue-200
+                                                    @elseif($project->status == 'in_progress') bg-gray-100 text-gray-700 border border-gray-200
+                                                    @else bg-amber-100 text-amber-700 border border-amber-200
+                                                    @endif">
+                                                    {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                                                <div class="flex items-center space-x-2 p-1.5 bg-gray-50 rounded-lg">
+                                                    <div class="p-1.5 bg-indigo-100 rounded-lg">
+                                                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">Client</p>
+                                                        <p class="text-sm font-medium text-gray-900">{{ $project->client->name }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2 p-1.5 bg-gray-50 rounded-lg">
+                                                    <div class="p-1.5 bg-purple-100 rounded-lg">
+                                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">Service</p>
+                                                        <p class="text-sm font-medium text-gray-900">{{ $project->service->name }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2 p-1.5 bg-gray-50 rounded-lg">
+                                                    <div class="p-1.5 bg-rose-100 rounded-lg">
+                                                        <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">Deadline</p>
+                                                        <p class="text-sm font-medium text-gray-900">{{ $project->deadline->format('M d, Y') }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
 
-                        <!-- Project 2 -->
-                        <div class="flex items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="font-medium text-gray-900">Mobile App</h3>
-                                    <span class="px-2 py-1 text-xs font-medium text-yellow-600 bg-yellow-50 rounded-full">In Progress</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-4">Developing a cross-platform mobile app using Flutter</p>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                        <span class="text-sm text-gray-500">45% Complete</span>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Due in 4 weeks</span>
-                                </div>
-                            </div>
-                        </div>
+                                            <div class="bg-gray-50 rounded-lg p-3 mb-3">
+                                                <p class="text-sm text-gray-600">Description: {{ Str::limit($project->description, 200) }}</p>
+                                            </div>
 
-                        <!-- Project 3 -->
-                        <div class="flex items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="font-medium text-gray-900">Dashboard UI</h3>
-                                    <span class="px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">Planning</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-4">Designing a modern admin dashboard interface</p>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        <span class="text-sm text-gray-500">25% Complete</span>
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-2">
+                                                    <div class="p-1.5 bg-blue-100 rounded-lg">
+                                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="text-sm text-gray-600">Required Skills: <span class="font-medium text-gray-900">{{ $project->skills_required }}</span></span>
+                                                </div>
+                                                <div class="mt-4 flex justify-end">
+                                                    @if($project->status == 'open')
+                                                        <form action="{{ route('projects.apply', $project->id) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                                Take This Project
+                                                            </button>
+                                                        </form>
+                                                    @elseif($project->status == 'in_progress' && $project->developer_id == auth()->id())
+                                                        <span class="text-blue-600 font-medium">You are working on this project</span>
+                                                    @else
+                                                        <span class="text-gray-500">Project is {{ $project->status }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="text-sm text-gray-500">Due in 3 weeks</span>
                                 </div>
                             </div>
-                        </div>
+                        @empty
+                            <div class="text-center py-12 bg-gray-50 rounded-xl">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+                                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">No projects available</h3>
+                                <p class="text-gray-500 max-w-sm mx-auto">Get started by checking back later for new opportunities. We'll notify you when new projects are posted.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -291,6 +340,33 @@
             duration: 1000,
             once: true
         });
+
+        function applyForProject(projectId) {
+            if (!confirm('Are you sure you want to apply for this project?')) {
+                return;
+            }
+
+            fetch(`/projects/${projectId}/apply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while applying for the project. Please try again.');
+            });
+        }
     </script>
 </body>
 </html> 

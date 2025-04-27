@@ -16,6 +16,7 @@ class Project extends Model
         'deadline',
         'skills_required',
         'client_id',
+        'developer_id',
         'service_id',
         'status',
     ];
@@ -28,6 +29,11 @@ class Project extends Model
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function developer()
+    {
+        return $this->belongsTo(User::class, 'developer_id');
     }
 
     public function service()
