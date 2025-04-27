@@ -13,12 +13,18 @@ class Service extends Model
         'name',
         'description',
         'price',
+        'duration',
         'category',
-        'status',
-        'image'
+        'image',
+        'status'
     ];
 
     protected $casts = [
         'price' => 'decimal:2'
     ];
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 } 

@@ -28,4 +28,14 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'client_id');
+    }
 }

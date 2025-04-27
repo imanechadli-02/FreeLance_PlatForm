@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>My Projects - FreelancePro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -82,10 +83,37 @@
                 <h1 class="text-2xl font-bold text-gray-800">My Projects</h1>
                 <p class="text-gray-600">Track and manage all your projects in one place</p>
             </div>
-            <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <button onclick="openModal()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                 New Project
             </button>
         </div>
+
+        <!-- Messages -->
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <div class="text-sm text-green-600">
+                        {{ session('success') }}
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-sm text-red-600">
+                        {{ session('error') }}
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <!-- Filters -->
         <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
@@ -402,10 +430,135 @@
         </div>
     </main>
 
+    <!-- New Project Modal -->
+    <div id="projectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-2xl bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Create New Project</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                        <div class="text-sm text-red-600">
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
+                <form action="{{ route('projects.store') }}" method="POST" onsubmit="handleSubmit(event)" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Project Title</label>
+                        <input type="text" name="title" id="title" required
+                            value="{{ old('title') }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="service_id" class="block text-sm font-medium text-gray-700">Service Type</label>
+                        <select name="service_id" id="service_id" required onchange="updateServicePrice(this)"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">Select a service</option>
+                            @foreach($services as $service)
+                                <option value="{{ $service->id }}" data-price="{{ $service->price }}" {{ old('service_id') == $service->id ? 'selected' : '' }}>
+                                    {{ $service->name }} - ${{ number_format($service->price, 2) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="service_price" class="block text-sm font-medium text-gray-700">Service Price</label>
+                        <input type="text" id="service_price" readonly
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm">
+                    </div>
+
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Project Description</label>
+                        <textarea name="description" id="description" rows="4" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description') }}</textarea>
+                    </div>
+
+                    <div>
+                        <label for="deadline" class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <input type="date" name="deadline" id="deadline" required
+                            value="{{ old('deadline') }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="skills_required" class="block text-sm font-medium text-gray-700">Required Skills</label>
+                        <input type="text" name="skills_required" id="skills_required" placeholder="e.g., PHP, Laravel, React"
+                            value="{{ old('skills_required') }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <input type="hidden" name="budget" id="budget">
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            Create Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({
             duration: 1000,
             once: true
+        });
+
+        function openModal() {
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        function updateServicePrice(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const priceInput = document.getElementById('service_price');
+            const budgetInput = document.getElementById('budget');
+            
+            if (price) {
+                priceInput.value = '$' + parseFloat(price).toFixed(2);
+                budgetInput.value = price;
+            } else {
+                priceInput.value = '';
+                budgetInput.value = '';
+            }
+        }
+
+        function handleSubmit(event) {
+            // Remove the event.preventDefault() to allow the form to submit normally
+            // The form will be submitted to the server and the controller will handle the redirect
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('projectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
         });
     </script>
 </body>

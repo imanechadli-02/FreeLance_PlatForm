@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 // use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\ApprovedMiddleware;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ProjectController;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -44,11 +45,27 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
+    // Client Projects Route
+    Route::get('/client/projects', function () {
+        $projects = auth()->user()->projects()->latest()->get();
+        $services = \App\Models\Service::all();
+        return view('client.projects', compact('projects', 'services'));
+    })->name('client.projects');
+    Route::post('/client/projects', [ProjectController::class, 'store'])->name('projects.store');
+
     // User Management Routes
     Route::prefix('admin')->group(function () {
         Route::get('/users', [AdminController::class, 'index'])->name('users.index');
         Route::post('/users/{user}/approve', [AdminController::class, 'approve'])->name('users.approve');
         Route::delete('/users/{user}', [AdminController::class, 'delete'])->name('users.delete');
+
+        // Admin Profile Routes
+        Route::get('/profile', function () {
+            return view('admin.profile');
+        })->name('admin.profile');
+        
+        Route::put('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
+        Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
     });
 
     // Service Management Routes

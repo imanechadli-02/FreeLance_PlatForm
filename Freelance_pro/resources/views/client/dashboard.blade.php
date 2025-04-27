@@ -61,42 +61,22 @@
 
             <!-- User Profile -->
             <div class="p-4 border-t">
-                <div class="relative">
-                    <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                             alt="Client" 
-                             class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <div class="font-medium">Sarah Johnson</div>
-                            <div class="text-sm text-gray-500">Client</div>
-                        </div>
-                    </button>
-                    
-                    <!-- Dropdown Menu -->
-                    <div id="userMenu" class="hidden absolute bottom-0 left-16 w-48 bg-white rounded-lg shadow-l                            <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-e') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                                           <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                @csrf
-                                <button type="submit" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                    </svg>
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Client" 
+                         class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <div class="font-medium">Sarah Johnson</div>
+                        <div class="text-sm text-gray-500">Client</div>
                     </div>
                 </div>
             </div>
-ogout') }}">
-                            <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit">Déconnexion</button>
-</form>
-    </div>
- <!-- Header -->
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-8">
+        <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Welcome back, Sarah!</h1>
@@ -365,21 +345,6 @@ ogout') }}">
         AOS.init({
             duration: 1000,
             once: true
-        });
-
-        // User menu toggle
-        const userMenuButton = document.getElementById('userMenuButton');
-        const userMenu = document.getElementById('userMenu');
-
-        userMenuButton.addEventListener('click', () => {
-            userMenu.classList.toggle('hidden');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
-                userMenu.classList.add('hidden');
-            }
         });
     </script>
 </body>

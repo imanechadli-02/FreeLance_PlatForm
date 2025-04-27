@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\User; // N'oublie pas d'importer le modèle User
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -58,5 +61,42 @@ class AdminController extends Controller
         return back()->with('success', 'User deleted successfully');
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
 
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'profil_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        if ($request->hasFile('profil_picture')) {
+            if ($user->profil_picture) {
+                Storage::delete('public/' . $user->profil_picture);
+            }
+
+            $path = $request->file('profil_picture')->store('profile-pictures', 'public');
+            $validated['profil_picture'] = $path;
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('admin.profile')->with('success', 'Profile updated successfully');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('admin.profile')->with('success', 'Password updated successfully');
+    }
 }
