@@ -145,4 +145,24 @@ class ProjectController extends Controller
                 ->withInput();
         }
     }
+
+    public function destroy(Project $project)
+    {
+        try {
+            // Check if user is authorized to delete this project
+            if ($project->client_id !== auth()->id()) {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+
+            // Delete the project
+            $project->delete();
+
+            return redirect()->route('client.dashboard')
+                ->with('success', 'Project deleted successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'An error occurred while deleting the project.');
+        }
+    }
 } 

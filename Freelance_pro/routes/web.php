@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/client/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/client/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('/client/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+    Route::delete('/client/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
     // User Management Routes
     Route::prefix('admin')->group(function () {
