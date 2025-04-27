@@ -82,9 +82,9 @@
                 <h1 class="text-2xl font-bold text-gray-800">Welcome back, Sarah!</h1>
                 <p class="text-gray-600">Here's an overview of your projects and activities</p>
             </div>
-            <a href="/client/projects" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                 New Project
-            </a>
+            </button>
         </div>
 
         <!-- Stats Overview -->
@@ -93,7 +93,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Active Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', '!=', 'completed')->count() }}</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">3</h3>
                     </div>
                     <div class="bg-blue-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Completed Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', 'completed')->count() }}</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">8</h3>
                     </div>
                     <div class="bg-green-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Total Investment</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">${{ number_format($projects->sum('budget'), 2) }}</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$24,500</h3>
                     </div>
                     <div class="bg-purple-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,68 +143,71 @@
             </div>
         </div>
 
-        <!-- Active Projects -->
-        <div class="mb-8">
+        <!-- Projects Section -->
+        <div class="mt-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">All My Projects</h2>
-                <a href="/client/projects" class="text-indigo-600 hover:text-indigo-700">View all</a>
+                <h2 class="text-2xl font-bold text-gray-800">All My Projects</h2>
+                <a href="/client/projects" class="text-indigo-600 hover:text-indigo-700">View All Projects</a>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @if($projects->count() > 0)
-                    @foreach($projects as $project)
-                        <!-- Project Card -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            <div class="relative">
-                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                     alt="Project" 
-                                     class="w-full h-48 object-cover">
-                                <div class="absolute top-4 right-4">
-                                    <span class="px-3 py-1 text-sm font-medium 
-                                        @if($project->status == 'open') text-green-600 bg-green-50
-                                        @elseif($project->status == 'in_progress') text-blue-600 bg-blue-50
-                                        @elseif($project->status == 'completed') text-purple-600 bg-purple-50
-                                        @else text-yellow-600 bg-yellow-50
-                                        @endif rounded-full">
-                                        {{ ucfirst(str_replace('_', ' ', $project->status)) }}
-                                    </span>
-                                </div>
+                @forelse($projects as $project)
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                                 alt="Project" 
+                                 class="w-full h-48 object-cover">
+                            <div class="absolute top-4 right-4">
+                                <span class="px-3 py-1 text-sm font-medium 
+                                    @if($project->status == 'open') text-green-600 bg-green-50
+                                    @elseif($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                    @elseif($project->status == 'completed') text-purple-600 bg-purple-50
+                                    @else text-yellow-600 bg-yellow-50
+                                    @endif rounded-full">
+                                    {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                </span>
                             </div>
-                            <div class="p-6">
-                                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $project->title }}</h3>
-                                <p class="text-gray-600 mb-4">{{ Str::limit($project->description, 100) }}</p>
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center">
-                                        @if($project->developer)
-                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                                 alt="Developer" 
-                                                 class="w-8 h-8 rounded-full mr-2">
-                                            <span class="text-sm text-gray-600">{{ $project->developer->name }}</span>
-                                        @else
-                                            <span class="text-sm text-gray-600">No developer assigned</span>
-                                        @endif
-                                    </div>
-                                    <span class="text-sm text-gray-500">Due: {{ $project->deadline->format('M d, Y') }}</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-lg font-bold text-gray-800">{{ $project->title }}</h3>
+                                <button onclick="openEditModal('{{ $project->id }}', '{{ $project->title }}', '{{ $project->description }}', '{{ $project->deadline }}', '{{ $project->skills_required }}', '{{ $project->service_id }}')" class="text-gray-400 hover:text-indigo-600">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-gray-600 mb-4">{{ Str::limit($project->description, 100) }}</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    @if($project->developer)
+                                        <img src="{{ $project->developer->profile_photo_url }}" 
+                                             alt="{{ $project->developer->name }}" 
+                                             class="w-8 h-8 rounded-full mr-2">
+                                        <span class="text-sm text-gray-600">{{ $project->developer->name }}</span>
+                                    @else
+                                        <span class="text-sm text-gray-600">No developer assigned</span>
+                                    @endif
                                 </div>
-                                <div class="space-y-2">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Budget</span>
-                                        <span class="text-gray-800 font-medium">${{ number_format($project->budget, 2) }}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-2">
-                                        <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $project->progress ?? 0 }}%"></div>
-                                    </div>
+                                <span class="text-sm text-gray-500">Due: {{ $project->deadline->format('M d, Y') }}</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Budget</span>
+                                    <span class="text-gray-800 font-medium">${{ number_format($project->budget, 2) }}</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $project->progress ?? 0 }}%"></div>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
-                @else
-                    <div class="col-span-3 bg-white rounded-2xl shadow-lg p-6 text-center">
-                        <p class="text-gray-600">You don't have any active projects yet.</p>
-                        <a href="/client/projects" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                            Create Your First Project
-                        </a>
                     </div>
-                @endif
+                @empty
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-500">You don't have any projects yet.</p>
+                        <a href="/client/projects" class="mt-4 inline-block text-indigo-600 hover:text-indigo-700">Create your first project</a>
+                    </div>
+                @endforelse
             </div>
         </div>
 
@@ -289,10 +292,140 @@
         </div>
     </main>
 
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-2xl bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Edit Project</h3>
+                    <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                        <div class="text-sm text-red-600">
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
+                <form id="editProjectForm" action="" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label for="edit_title" class="block text-sm font-medium text-gray-700">Project Title</label>
+                        <input type="text" name="title" id="edit_title" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="edit_service_id" class="block text-sm font-medium text-gray-700">Service Type</label>
+                        <select name="service_id" id="edit_service_id" required onchange="updateEditServicePrice(this)"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">Select a service</option>
+                            @foreach($services as $service)
+                                <option value="{{ $service->id }}" data-price="{{ $service->price }}">
+                                    {{ $service->name }} - ${{ number_format($service->price, 2) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="edit_service_price" class="block text-sm font-medium text-gray-700">Service Price</label>
+                        <input type="text" id="edit_service_price" readonly
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm">
+                    </div>
+
+                    <div>
+                        <label for="edit_description" class="block text-sm font-medium text-gray-700">Project Description</label>
+                        <textarea name="description" id="edit_description" rows="4" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="edit_deadline" class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <input type="date" name="deadline" id="edit_deadline" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="edit_skills_required" class="block text-sm font-medium text-gray-700">Required Skills</label>
+                        <input type="text" name="skills_required" id="edit_skills_required" placeholder="e.g., PHP, Laravel, React"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <input type="hidden" name="budget" id="edit_budget">
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeEditModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            Update Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({
             duration: 1000,
             once: true
+        });
+
+        function openEditModal(projectId, title, description, deadline, skillsRequired, serviceId) {
+            document.getElementById('editProjectModal').classList.remove('hidden');
+            document.getElementById('editProjectForm').action = `/client/projects/${projectId}`;
+            
+            // Set form values
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_description').value = description;
+            document.getElementById('edit_deadline').value = deadline;
+            document.getElementById('edit_skills_required').value = skillsRequired;
+            
+            // Set service and update price
+            const serviceSelect = document.getElementById('edit_service_id');
+            serviceSelect.value = serviceId;
+            updateEditServicePrice(serviceSelect);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editProjectModal').classList.add('hidden');
+        }
+
+        function updateEditServicePrice(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const priceInput = document.getElementById('edit_service_price');
+            const budgetInput = document.getElementById('edit_budget');
+            
+            if (price) {
+                priceInput.value = '$' + parseFloat(price).toFixed(2);
+                budgetInput.value = price;
+            } else {
+                priceInput.value = '';
+                budgetInput.value = '';
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editProjectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
         });
     </script>
 </body>

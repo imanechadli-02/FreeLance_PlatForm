@@ -37,7 +37,8 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard Routes
     Route::get('/client/dashboard', function () {
         $projects = auth()->user()->projects()->latest()->get();
-        return view('client.dashboard', compact('projects'));
+        $services = \App\Models\Service::all();
+        return view('client.dashboard', compact('projects', 'services'));
     })->name('client.dashboard');
     Route::get('/developer/dashboard', function () {
         return view('developer.dashboard');
@@ -53,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
         return view('client.projects', compact('projects', 'services'));
     })->name('client.projects');
     Route::post('/client/projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/client/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::put('/client/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
 
     // User Management Routes
     Route::prefix('admin')->group(function () {

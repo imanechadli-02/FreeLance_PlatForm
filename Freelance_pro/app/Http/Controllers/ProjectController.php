@@ -76,4 +76,73 @@ class ProjectController extends Controller
                 ->with('error', 'Failed to create project: ' . $e->getMessage());
         }
     }
+
+    public function update(Request $request, Project $project)
+    {
+        try {
+            // Check if user is authorized to update this project
+            if ($project->client_id !== auth()->id()) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unauthorized action.'
+                    ], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+
+            // Validate the request
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'deadline' => 'required|date|after:today',
+                'skills_required' => 'required|string',
+                'service_id' => 'required|exists:services,id',
+            ]);
+
+            // Get the service to set the budget
+            $service = Service::findOrFail($request->service_id);
+
+            // Update project data
+            $project->update([
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'budget' => $service->price,
+                'deadline' => $validated['deadline'],
+                'skills_required' => $validated['skills_required'],
+                'service_id' => $validated['service_id'],
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Project updated successfully.'
+                ]);
+            }
+
+            return redirect()->route('client.dashboard')
+                ->with('success', 'Project updated successfully.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred while updating the project.'
+                ], 500);
+            }
+            return redirect()->back()
+                ->with('error', 'An error occurred while updating the project.')
+                ->withInput();
+        }
+    }
 } 
