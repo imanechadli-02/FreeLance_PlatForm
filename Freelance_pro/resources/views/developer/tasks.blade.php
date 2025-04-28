@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Management - FreelancePro</title>
+    <title>My Tasks - FreelancePro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .gradient-text {
             background: linear-gradient(45deg, #6366f1, #8b5cf6);
@@ -32,12 +33,28 @@
                     </svg>
                     Dashboard
                 </a>
-                <a href="/developer/projects" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Projects
-                </a>
+                <div>
+                    <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg ">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        My Projects
+                        <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="projectsList" class="hidden pl-12 space-y-1">
+                        @forelse($projects->where('developer_id', auth()->id()) as $project)
+                            <a href="{{ route('developer.tasks') }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
+                                {{ $project->title }}
+                            </a>
+                        @empty
+                            <div class="py-2 text-sm text-gray-500">
+                                No active projects
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
                 <a href="/developer/tasks" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -79,8 +96,8 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Task Management</h1>
-                <p class="text-gray-600">Track and manage your project tasks</p>
+                <h1 class="text-2xl font-bold text-gray-800">My Tasks</h1>
+                <p class="text-gray-600">Manage and track your project tasks</p>
             </div>
             <div class="flex items-center space-x-4">
                 <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
@@ -93,54 +110,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                 </button>
-            </div>
-        </div>
-
-        <!-- Task Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-gray-500">Total Tasks</h3>
-                    <span class="p-2 bg-indigo-50 rounded-lg">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-gray-900">24</div>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-gray-500">Completed</h3>
-                    <span class="p-2 bg-green-50 rounded-lg">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-gray-900">18</div>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-gray-500">In Progress</h3>
-                    <span class="p-2 bg-yellow-50 rounded-lg">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-gray-900">4</div>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-gray-500">Due Today</h3>
-                    <span class="p-2 bg-red-50 rounded-lg">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-gray-900">2</div>
             </div>
         </div>
 
@@ -161,19 +130,19 @@
                 <div>
                     <select class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="">All Status</option>
-                        <option value="todo">To Do</option>
-                        <option value="in-progress">In Progress</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
                 </div>
 
-                <!-- Project Filter -->
+                <!-- Priority Filter -->
                 <div>
                     <select class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">All Projects</option>
-                        <option value="ecommerce">E-commerce Website</option>
-                        <option value="mobile">Mobile App</option>
-                        <option value="dashboard">Dashboard UI</option>
+                        <option value="">All Priorities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
                     </select>
                 </div>
 
@@ -181,137 +150,121 @@
                 <div>
                     <select class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="">Sort By</option>
-                        <option value="due-date">Due Date</option>
+                        <option value="due_date">Due Date</option>
                         <option value="priority">Priority</option>
-                        <option value="status">Status</option>
+                        <option value="created_at">Created Date</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <!-- Tasks List -->
-        <div class="space-y-4">
-            <!-- Task Item 1 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up">
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            <input type="checkbox" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Implement User Authentication</h3>
-                            <p class="text-gray-600 mt-1">Set up secure user authentication system with JWT tokens and refresh tokens</p>
-                            <div class="flex items-center mt-4 space-x-4">
-                                <span class="px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full">E-commerce Website</span>
-                                <span class="px-3 py-1 text-xs font-medium text-yellow-600 bg-yellow-50 rounded-full">In Progress</span>
-                                <span class="text-sm text-gray-500">Due in 2 days</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                        </button>
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">Progress</span>
-                        <span class="font-medium">60%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 60%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Task Item 2 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            <input type="checkbox" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Design Mobile App UI</h3>
-                            <p class="text-gray-600 mt-1">Create modern and intuitive UI designs for the mobile application</p>
-                            <div class="flex items-center mt-4 space-x-4">
-                                <span class="px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full">Mobile App</span>
-                                <span class="px-3 py-1 text-xs font-medium text-green-600 bg-green-50 rounded-full">Completed</span>
-                                <span class="text-sm text-gray-500">Completed 2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                        </button>
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">Progress</span>
-                        <span class="font-medium">100%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
-                        <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Task Item 3 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            <input type="checkbox" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Implement Dashboard Analytics</h3>
-                            <p class="text-gray-600 mt-1">Create interactive analytics dashboard with charts and data visualization</p>
-                            <div class="flex items-center mt-4 space-x-4">
-                                <span class="px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full">Dashboard UI</span>
-                                <span class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">To Do</span>
-                                <span class="text-sm text-gray-500">Due in 5 days</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                        </button>
-                        <button class="p-2 text-gray-400 hover:text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">Progress</span>
-                        <span class="font-medium">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
+        <!-- Tasks Table -->
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden" data-aos="fade-up">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Task Name
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Project
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Priority
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Due Date
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">Design Homepage</div>
+                                <div class="text-sm text-gray-500">Create a modern and responsive homepage design</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">E-commerce Website</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    In Progress
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    High
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                2024-03-25
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                                <button class="text-gray-600 hover:text-gray-900">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">Implement User Authentication</div>
+                                <div class="text-sm text-gray-500">Set up user registration and login functionality</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">Mobile App</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Completed
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Medium
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                2024-03-20
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                                <button class="text-gray-600 hover:text-gray-900">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">Database Schema Design</div>
+                                <div class="text-sm text-gray-500">Design the database structure for the application</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">Dashboard UI</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Pending
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Low
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                2024-03-30
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                                <button class="text-gray-600 hover:text-gray-900">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -335,6 +288,17 @@
         AOS.init({
             duration: 1000,
             once: true
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectsBtn = document.getElementById('projectsBtn');
+            const projectsList = document.getElementById('projectsList');
+            const projectsArrow = document.getElementById('projectsArrow');
+            
+            projectsBtn.addEventListener('click', function() {
+                projectsList.classList.toggle('hidden');
+                projectsArrow.classList.toggle('rotate-180');
+            });
         });
     </script>
 </body>

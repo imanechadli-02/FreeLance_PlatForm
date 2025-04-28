@@ -7,6 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Middleware\ApprovedMiddleware;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectTaskController;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -86,6 +87,17 @@ Route::middleware(['auth'])->group(function () {
 
     // Developer Project Routes
     Route::post('/projects/{project}/apply', [ProjectController::class, 'apply'])->name('projects.apply');
+
+    // Developer Projects Routes
+    Route::get('/developer/projects', [ProjectController::class, 'index'])->name('developer.projects.index');
+
+    // Developer Tasks Route
+    Route::get('/developer/tasks', [ProjectTaskController::class, 'index'])->name('developer.tasks');
+
+    // Project Tasks Routes
+    Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'show'])
+        ->name('developer.projects.tasks')
+        ->middleware(['auth', 'role:developer']);
 });
 
 // Approved User Routes
