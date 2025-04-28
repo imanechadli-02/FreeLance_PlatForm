@@ -92,12 +92,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/developer/projects', [ProjectController::class, 'index'])->name('developer.projects.index');
 
     // Developer Tasks Route
-    Route::get('/developer/tasks', [ProjectTaskController::class, 'index'])->name('developer.tasks');
+    Route::get('/developer/tasks/{project?}', [ProjectTaskController::class, 'index'])->name('developer.tasks');
 
     // Project Tasks Routes
     Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'show'])
-        ->name('developer.projects.tasks')
-        ->middleware(['auth', 'role:developer']);
+        ->name('developer.projects.tasks');
 });
 
 // Approved User Routes

@@ -45,7 +45,7 @@
                     </button>
                     <div id="projectsList" class="hidden pl-12 space-y-1">
                         @forelse($projects->where('developer_id', auth()->id()) as $project)
-                            <a href="{{ route('developer.tasks') }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
+                            <a href="{{ route('developer.tasks', $project) }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
                                 {{ $project->title }}
                             </a>
                         @empty
