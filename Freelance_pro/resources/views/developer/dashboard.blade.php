@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .gradient-text {
             background: linear-gradient(45deg, #6366f1, #8b5cf6);
@@ -32,12 +33,28 @@
                     </svg>
                     Dashboard
                 </a>
-                <a href="/developer/projects" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Projects
-                </a>
+                <div>
+                    <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg ">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        My Projects
+                        <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="projectsList" class="hidden pl-12 space-y-1">
+                        @forelse($projects->where('developer_id', auth()->id()) as $project)
+                            <a href="/developer/projects/{{ $project->id }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
+                                {{ $project->title }}
+                            </a>
+                        @empty
+                            <div class="py-2 text-sm text-gray-500">
+                                No active projects
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
                 <a href="/developer/tasks" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -367,6 +384,17 @@
                 alert('An error occurred while applying for the project. Please try again.');
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectsBtn = document.getElementById('projectsBtn');
+            const projectsList = document.getElementById('projectsList');
+            const projectsArrow = document.getElementById('projectsArrow');
+            
+            projectsBtn.addEventListener('click', function() {
+                projectsList.classList.toggle('hidden');
+                projectsArrow.classList.toggle('rotate-180');
+            });
+        });
     </script>
 </body>
 </html> 
