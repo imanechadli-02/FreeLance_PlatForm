@@ -9,10 +9,42 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        .gradient-text {
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        
+        .modal-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .input-focus {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
+        }
+        
+        .priority-low {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+        
+        .priority-medium {
+            background-color: #fff7ed;
+            color: #ea580c;
+        }
+        
+        .priority-high {
+            background-color: #fef2f2;
+            color: #dc2626;
         }
     </style>
 </head>
@@ -191,7 +223,7 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') : 'No due date' }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
@@ -249,7 +281,7 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') : 'No due date' }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
@@ -307,7 +339,7 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') : 'No due date' }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
@@ -343,41 +375,80 @@
     </main>
 
     <!-- Add Task Modal -->
-    <div id="addTaskModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Task</h3>
-                <form id="addTaskForm" class="space-y-4">
-                    <input type="hidden" id="taskStatus" name="status">
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" id="title" name="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    <div id="addTaskModal" class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-6 max-w-2xl w-full">
+            <div class="bg-white rounded-2xl modal-shadow overflow-hidden">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 modal-gradient">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-semibold text-white">Add New Task</h3>
+                        <button onclick="closeAddTaskModal()" class="text-white/80 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
-                        <select id="priority" name="priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
-                        <input type="date" id="due_date" name="due_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6">
+                    <form id="addTaskForm" class="space-y-6">
+                        <input type="hidden" id="taskStatus" name="status">
+                        
+                        <!-- Title Field -->
+                        <div class="space-y-2">
+                            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                            <input type="text" id="title" name="title" 
+                                   class="block w-full rounded-lg border-gray-200 input-focus focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                                   placeholder="Enter task title">
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="space-y-2">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="description" name="description" rows="3" 
+                                      class="block w-full rounded-lg border-gray-200 input-focus focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                                      placeholder="Enter task description"></textarea>
+                        </div>
+
+                        <!-- Priority and Due Date Fields -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Priority Field -->
+                            <div class="space-y-2">
+                                <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+                                <select id="priority" name="priority" 
+                                        class="block w-full rounded-lg border-gray-200 input-focus focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                                    <option value="low" class="priority-low">Low Priority</option>
+                                    <option value="medium" class="priority-medium">Medium Priority</option>
+                                    <option value="high" class="priority-high">High Priority</option>
+                                </select>
+                            </div>
+
+                            <!-- Due Date Field -->
+                            <div class="space-y-2">
+                                <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+                                <input type="date" id="due_date" name="due_date" 
+                                       class="block w-full rounded-lg border-gray-200 input-focus focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                                       value="{{ old('due_date') }}"
+                                       min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
                     <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+                        <button type="button" onclick="closeAddTaskModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md">
+                        <button type="submit" form="addTaskForm"
+                                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
                             Add Task
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -412,7 +483,6 @@
                     project_id: {{ isset($project) ? $project->id : 'null' }}
                 };
 
-                // Send POST request to create task
                 fetch('{{ route("developer.tasks.store") }}', {
                     method: 'POST',
                     headers: {
@@ -474,6 +544,7 @@
         function openAddTaskModal(status) {
             document.getElementById('taskStatus').value = status;
             document.getElementById('addTaskModal').classList.remove('hidden');
+            document.getElementById('addTaskForm').reset();
         }
 
         function closeAddTaskModal() {

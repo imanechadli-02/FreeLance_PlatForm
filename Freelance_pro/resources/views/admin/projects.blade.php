@@ -283,6 +283,12 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-3">
+                                    <button onclick="openProjectDetails({{ $project->id }})" class="text-blue-600 hover:text-blue-900">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
                                     <a href="{{ route('projects.edit', $project) }}" class="text-indigo-600 hover:text-indigo-900">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -327,11 +333,132 @@
         </div>
     </main>
 
+    <!-- Project Details Modal -->
+    <div id="projectDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-4/5 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800" id="modalProjectTitle">Project Details</h3>
+                <button onclick="closeProjectDetails()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Project Information</h4>
+                    <div id="projectInfo" class="space-y-2">
+                        <p><span class="font-medium">Service:</span> <span id="modalService"></span></p>
+                        <p><span class="font-medium">Status:</span> <span id="modalStatus"></span></p>
+                        <p><span class="font-medium">Deadline:</span> <span id="modalDeadline"></span></p>
+                        <p><span class="font-medium">Budget:</span> <span id="modalBudget"></span></p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Client Information</h4>
+                    <div id="clientInfo" class="space-y-2">
+                        <p><span class="font-medium">Name:</span> <span id="modalClientName"></span></p>
+                        <p><span class="font-medium">Email:</span> <span id="modalClientEmail"></span></p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Developer Information</h4>
+                    <div id="developerInfo" class="space-y-2">
+                        <p><span class="font-medium">Name:</span> <span id="modalDeveloperName"></span></p>
+                        <p><span class="font-medium">Email:</span> <span id="modalDeveloperEmail"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-medium text-gray-700 mb-2">Project Tasks</h4>
+                <div id="projectTasks" class="bg-white border rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({
             duration: 1000,
             once: true
         });
+        
+        function openProjectDetails(projectId) {
+            const modal = document.getElementById('projectDetailsModal');
+            modal.classList.remove('hidden');
+            
+            // Fetch project details
+            fetch(`/admin/projects/${projectId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    const project = data.project;
+                    const tasks = data.tasks;
+                    
+                    // Update modal content
+                    document.getElementById('modalProjectTitle').textContent = project.title;
+                    document.getElementById('modalService').textContent = project.service.name;
+                    document.getElementById('modalStatus').textContent = project.status;
+                    document.getElementById('modalDeadline').textContent = project.deadline;
+                    document.getElementById('modalBudget').textContent = `$${project.budget}`;
+                    
+                    // Client info
+                    document.getElementById('modalClientName').textContent = project.client.name;
+                    document.getElementById('modalClientEmail').textContent = project.client.email;
+                    
+                    // Developer info
+                    document.getElementById('modalDeveloperName').textContent = project.developer.name;
+                    document.getElementById('modalDeveloperEmail').textContent = project.developer.email;
+                    
+                    // Tasks table
+                    const tasksTableBody = document.getElementById('tasksTableBody');
+                    tasksTableBody.innerHTML = '';
+                    
+                    tasks.forEach(task => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${task.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.description}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${task.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                      task.status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 
+                                      'bg-yellow-100 text-yellow-800'}">
+                                    ${task.status.replace('_', ' ')}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.due_date || 'Not set'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.completed_at || 'Not completed'}</td>
+                        `;
+                        tasksTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching project details:', error);
+                    alert('Error loading project details. Please try again.');
+                });
+        }
+        
+        function closeProjectDetails() {
+            const modal = document.getElementById('projectDetailsModal');
+            modal.classList.add('hidden');
+        }
     </script>
 </body>
 </html> 

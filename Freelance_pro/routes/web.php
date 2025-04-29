@@ -81,6 +81,35 @@ Route::middleware(['auth'])->group(function () {
             return view('admin.projects', compact('projects'));
         })->name('admin.projects');
         
+        // Admin Project Show Route
+        Route::get('/projects/{project}', function (\App\Models\Project $project) {
+            return view('admin.project-details', compact('project'));
+        })->name('admin.projects.show');
+        
+        // Admin Project Details AJAX Route
+        Route::get('/projects/{project}/details', function (\App\Models\Project $project) {
+            $project->load(['client', 'developer', 'service', 'tasks']);
+            
+            // Format dates for JSON response
+            $project->deadline = $project->deadline ? $project->deadline->format('M d, Y') : null;
+            
+            $tasks = $project->tasks->map(function($task) {
+                return [
+                    'id' => $task->id,
+                    'title' => $task->title,
+                    'description' => $task->description,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date ? $task->due_date->format('M d, Y') : null,
+                    'completed_at' => $task->completed_at ? $task->completed_at->format('M d, Y') : null,
+                ];
+            });
+            
+            return response()->json([
+                'project' => $project,
+                'tasks' => $tasks
+            ]);
+        })->name('admin.projects.details');
+        
         // Admin Project Delete Route
         Route::delete('/projects/{project}', function (\App\Models\Project $project) {
             $project->delete();
