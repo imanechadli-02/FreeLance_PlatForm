@@ -16,12 +16,18 @@ class Task extends Model
         'priority',
         'due_date',
         'completed_at',
-        'project_id'
+        'project_id',
+        'developer_id'
     ];
 
     protected $dates = [
         'due_date',
         'completed_at'
+    ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+        'completed_at' => 'datetime'
     ];
 
     public function project()

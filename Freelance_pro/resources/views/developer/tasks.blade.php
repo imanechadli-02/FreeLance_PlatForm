@@ -36,7 +36,7 @@
                 <div>
                     <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg ">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2M7 7h10"/>
                         </svg>
                         My Projects
                         <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,9 +159,16 @@
                 <div class="p-4 bg-gray-50 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-800">To Do</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
-                            {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'pending')->count() : 0 }}
-                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
+                                {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'pending')->count() : 0 }}
+                            </span>
+                            <button onclick="openAddTaskModal('pending')" class="p-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="p-4 space-y-4">
@@ -184,9 +191,16 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date->format('M d, Y') }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
                                 </div>
-                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                <div class="flex items-center space-x-2">
+                                    <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="pending" {{ $task->status === 'pending' ? 'selected' : '' }}>To Do</option>
+                                        <option value="in_progress" {{ $task->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                        <option value="completed" {{ $task->status === 'completed' ? 'selected' : '' }}>Done</option>
+                                    </select>
+                                    <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -203,9 +217,16 @@
                 <div class="p-4 bg-gray-50 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-800">In Progress</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
-                            {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'in_progress')->count() : 0 }}
-                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
+                                {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'in_progress')->count() : 0 }}
+                            </span>
+                            <button onclick="openAddTaskModal('in_progress')" class="p-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="p-4 space-y-4">
@@ -228,9 +249,16 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date->format('M d, Y') }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
                                 </div>
-                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                <div class="flex items-center space-x-2">
+                                    <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="pending" {{ $task->status === 'pending' ? 'selected' : '' }}>To Do</option>
+                                        <option value="in_progress" {{ $task->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                        <option value="completed" {{ $task->status === 'completed' ? 'selected' : '' }}>Done</option>
+                                    </select>
+                                    <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -247,9 +275,16 @@
                 <div class="p-4 bg-gray-50 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-800">Done</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
-                            {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'completed')->count() : 0 }}
-                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
+                                {{ isset($project) && $project->tasks ? $project->tasks->where('status', 'completed')->count() : 0 }}
+                            </span>
+                            <button onclick="openAddTaskModal('completed')" class="p-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="p-4 space-y-4">
@@ -272,9 +307,16 @@
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-xs text-gray-500">{{ $task->due_date->format('M d, Y') }}</span>
+                                    <span class="text-xs text-gray-500">{{ $task->due_date ? $task->due_date->format('M d, Y') : 'No due date' }}</span>
                                 </div>
-                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                <div class="flex items-center space-x-2">
+                                    <select onchange="updateTaskStatus({{ $task->id }}, this.value)" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="pending" {{ $task->status === 'pending' ? 'selected' : '' }}>To Do</option>
+                                        <option value="in_progress" {{ $task->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                        <option value="completed" {{ $task->status === 'completed' ? 'selected' : '' }}>Done</option>
+                                    </select>
+                                    <button class="text-xs text-indigo-600 hover:text-indigo-800">View Details</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -300,6 +342,46 @@
         @endif
     </main>
 
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Task</h3>
+                <form id="addTaskForm" class="space-y-4">
+                    <input type="hidden" id="taskStatus" name="status">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="title" name="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+                        <select id="priority" name="priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+                        <input type="date" id="due_date" name="due_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md">
+                            Add Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({
             duration: 1000,
@@ -315,7 +397,89 @@
                 projectsList.classList.toggle('hidden');
                 projectsArrow.classList.toggle('rotate-180');
             });
+
+            // Add Task Form Submission
+            const addTaskForm = document.getElementById('addTaskForm');
+            addTaskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(addTaskForm);
+                const taskData = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    priority: formData.get('priority'),
+                    due_date: formData.get('due_date'),
+                    status: formData.get('status'),
+                    project_id: {{ isset($project) ? $project->id : 'null' }}
+                };
+
+                // Send POST request to create task
+                fetch('{{ route("developer.tasks.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(taskData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Error creating task: ' + (data.message || 'Unknown error occurred'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error creating task. Please try again.');
+                });
+            });
         });
+
+        function updateTaskStatus(taskId, newStatus) {
+            fetch(`/developer/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error updating task status: ' + (data.message || 'Unknown error occurred'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating task status. Please try again.');
+            });
+        }
+
+        function openAddTaskModal(status) {
+            document.getElementById('taskStatus').value = status;
+            document.getElementById('addTaskModal').classList.remove('hidden');
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('hidden');
+            document.getElementById('addTaskForm').reset();
+        }
     </script>
 </body>
 </html> 

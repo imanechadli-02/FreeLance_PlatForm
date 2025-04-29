@@ -270,7 +270,7 @@
                                                             </button>
                                                         </form>
                                                     @elseif($project->status == 'in_progress' && $project->developer_id == auth()->id())
-                                                        <span class="text-blue-600 font-medium">You are working on this project</span>
+                                                        <span class="text-blue-400 font-sm">You are working on this project</span>
                                                     @else
                                                         <span class="text-gray-500">Project is {{ $project->status }}</span>
                                                     @endif

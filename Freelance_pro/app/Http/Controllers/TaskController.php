@@ -48,17 +48,18 @@ class TaskController extends Controller
             'description' => 'required|string',
             'priority' => 'required|in:low,medium,high',
             'due_date' => 'required|date',
-            'project_id' => 'required|exists:projects,id'
+            'project_id' => 'required|exists:projects,id',
+            'status' => 'required|in:pending,in_progress,completed'
         ]);
 
         $task = Task::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'priority' => $validated['priority'],
-            'due_date' => $validated['due_date'],
+            'due_date' => \Carbon\Carbon::parse($validated['due_date']),
             'project_id' => $validated['project_id'],
             'developer_id' => Auth::id(),
-            'status' => 'pending'
+            'status' => $validated['status']
         ]);
 
         return response()->json([
@@ -128,5 +129,23 @@ class TaskController extends Controller
 
         return redirect()->route('projects.tasks.index', $project)
             ->with('success', 'Task marked as completed.');
+    }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,in_progress,completed'
+        ]);
+
+        $task->update([
+            'status' => $validated['status'],
+            'completed_at' => $validated['status'] === 'completed' ? now() : null
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task status updated successfully',
+            'task' => $task
+        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Middleware\ApprovedMiddleware;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\TaskController;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -93,6 +94,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Developer Tasks Route
     Route::get('/developer/tasks/{project?}', [ProjectTaskController::class, 'index'])->name('developer.tasks');
+    Route::post('/developer/tasks', [TaskController::class, 'store'])->name('developer.tasks.store');
+    Route::put('/developer/tasks/{task}', [TaskController::class, 'updateStatus'])->name('developer.tasks.updateStatus');
 
     // Project Tasks Routes
     Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'show'])
