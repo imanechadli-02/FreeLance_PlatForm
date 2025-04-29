@@ -148,193 +148,118 @@
             <div>
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Active Projects</h2>
-                    <span class="text-sm text-gray-500">3 projects</span>
+                    <span class="text-sm text-gray-500">{{ $projects->where('status', '!=', 'completed')->count() }} projects</span>
                 </div>
                 <div class="space-y-6">
-                    <!-- Project 1 -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center mb-4">
-                                        <h3 class="text-lg font-bold text-gray-800 mr-4">E-commerce Website Redesign</h3>
-                                        <span class="px-3 py-1 text-sm font-medium text-green-600 bg-green-50 rounded-full">
-                                            In Progress
-                                        </span>
-                                    </div>
-                                    <p class="text-gray-600 mb-6">Modernizing the online shopping experience with improved UI/UX and performance optimizations.</p>
-                                    
-                                    <!-- Timeline -->
-                                    <div class="relative mb-6">
-                                        <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                                        <div class="space-y-6">
-                                            <!-- Timeline Item 1 -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Project Initiation</h4>
-                                                        <p class="text-sm text-gray-500">Requirements gathering and planning</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <!-- Timeline Item 2 -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Design Phase</h4>
-                                                        <p class="text-sm text-gray-500">UI/UX design and prototyping</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <!-- Timeline Item 3 -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Development</h4>
-                                                        <p class="text-sm text-gray-500">Frontend and backend implementation</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">In Progress</span>
-                                                </div>
-                                            </div>
-                                            <!-- Timeline Item 4 -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-gray-300 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-400">Testing & Launch</h4>
-                                                        <p class="text-sm text-gray-400">Quality assurance and deployment</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-400">Pending</span>
-                                                </div>
-                                            </div>
+                    @forelse($projects->where('status', '!=', 'completed') as $project)
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-4">
+                                            <h3 class="text-lg font-bold text-gray-800 mr-4">{{ $project->title }}</h3>
+                                            <span class="px-3 py-1 text-sm font-medium 
+                                                @if($project->status == 'open') text-green-600 bg-green-50
+                                                @elseif($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                                @elseif($project->status == 'completed') text-purple-600 bg-purple-50
+                                                @else text-yellow-600 bg-yellow-50
+                                                @endif rounded-full">
+                                                {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                            </span>
                                         </div>
-                                    </div>
-
-                                    <!-- Project Details -->
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div class="flex items-center">
-                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                                 alt="Developer" 
-                                                 class="w-8 h-8 rounded-full mr-3">
+                                        <p class="text-gray-600 mb-6">{{ $project->description }}</p>
+                                        
+                                        <!-- Project Details -->
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                            <div class="flex items-center">
+                                                @if($project->developer)
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($project->developer->name) }}&background=6366f1&color=fff" 
+                                                     alt="{{ $project->developer->name }}" 
+                                                     class="w-8 h-8 rounded-full mr-3">
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">{{ $project->developer->name }}</div>
+                                                    <div class="text-xs text-gray-500">Developer</div>
+                                                </div>
+                                                @else
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">No developer assigned</div>
+                                                </div>
+                                                @endif
+                                            </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-800">John Smith</div>
-                                                <div class="text-xs text-gray-500">Lead Developer</div>
+                                                <div class="text-sm text-gray-500">Due Date</div>
+                                                <div class="font-medium text-gray-800">{{ $project->deadline->format('F j, Y') }}</div>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm text-gray-500">Budget</div>
+                                                <div class="font-medium text-gray-800">${{ number_format($project->budget, 2) }}</div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Due Date</div>
-                                            <div class="font-medium text-gray-800">March 30, 2024</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Budget</div>
-                                            <div class="font-medium text-gray-800">$12,500</div>
+                                        
+                                        <!-- Tasks Section -->
+                                        <div class="mt-4">
+                                            <button onclick="toggleTasks('{{ $project->id }}')" class="flex items-center text-indigo-600 hover:text-indigo-700">
+                                                <svg id="icon-{{ $project->id }}" class="w-5 h-5 mr-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                                <span>Tasks ({{ $project->tasks->count() }})</span>
+                                            </button>
+                                            
+                                            <div id="tasks-{{ $project->id }}" class="hidden mt-4 border-t pt-4">
+                                                @if($project->tasks->count() > 0)
+                                                    <div class="space-y-4">
+                                                        @foreach($project->tasks as $task)
+                                                            <div class="bg-gray-50 rounded-lg p-4">
+                                                                <div class="flex justify-between items-start">
+                                                                    <div>
+                                                                        <h4 class="font-medium text-gray-800">{{ $task->title }}</h4>
+                                                                        <p class="text-sm text-gray-600 mt-1">{{ $task->description }}</p>
+                                                                    </div>
+                                                                    <span class="px-2 py-1 text-xs font-medium 
+                                                                        @if($task->status == 'pending') text-yellow-600 bg-yellow-50
+                                                                        @elseif($task->status == 'in_progress') text-blue-600 bg-blue-50
+                                                                        @else text-green-600 bg-green-50
+                                                                        @endif rounded-full">
+                                                                        {{ ucfirst($task->status) }}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="mt-3 flex justify-between items-center text-xs text-gray-500">
+                                                                    <div>
+                                                                        <span class="font-medium">Priority:</span> 
+                                                                        <span class="
+                                                                            @if($task->priority == 'low') text-green-600
+                                                                            @elseif($task->priority == 'medium') text-yellow-600
+                                                                            @else text-red-600
+                                                                            @endif">
+                                                                            {{ ucfirst($task->priority) }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="font-medium">Due:</span> {{ $task->due_date->format('M j, Y') }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <p class="text-gray-500 text-sm">No tasks have been created for this project yet.</p>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="ml-6">
-                                    <button class="px-4 py-2 text-indigo-600 hover:text-indigo-700">
-                                        View Details
-                                    </button>
+                                    <div class="ml-6">
+                                        <button class="px-4 py-2 text-indigo-600 hover:text-indigo-700">
+                                            View Details
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Project 2 -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center mb-4">
-                                        <h3 class="text-lg font-bold text-gray-800 mr-4">Mobile App UI Design</h3>
-                                        <span class="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
-                                            Review Phase
-                                        </span>
-                                    </div>
-                                    <p class="text-gray-600 mb-6">Creating a modern and intuitive user interface for the fitness tracking mobile app.</p>
-                                    
-                                    <!-- Timeline -->
-                                    <div class="relative mb-6">
-                                        <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                                        <div class="space-y-6">
-                                            <!-- Timeline Items -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Research & Analysis</h4>
-                                                        <p class="text-sm text-gray-500">User research and market analysis</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Wireframing</h4>
-                                                        <p class="text-sm text-gray-500">Initial layout and structure</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-indigo-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">UI Design</h4>
-                                                        <p class="text-sm text-gray-500">Visual design and prototyping</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">In Progress</span>
-                                                </div>
-                                            </div>
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-gray-300 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-400">Final Review</h4>
-                                                        <p class="text-sm text-gray-400">Client approval and handoff</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-400">Pending</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Project Details -->
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div class="flex items-center">
-                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                                 alt="Designer" 
-                                                 class="w-8 h-8 rounded-full mr-3">
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-800">Sarah Wilson</div>
-                                                <div class="text-xs text-gray-500">UI/UX Designer</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Due Date</div>
-                                            <div class="font-medium text-gray-800">March 25, 2024</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Budget</div>
-                                            <div class="font-medium text-gray-800">$8,500</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ml-6">
-                                    <button class="px-4 py-2 text-indigo-600 hover:text-indigo-700">
-                                        View Details
-                                    </button>
-                                </div>
-                            </div>
+                    @empty
+                        <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+                            <p class="text-gray-500">No active projects found.</p>
                         </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -342,89 +267,118 @@
             <div>
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Completed Projects</h2>
-                    <span class="text-sm text-gray-500">8 projects</span>
+                    <span class="text-sm text-gray-500">{{ $projects->where('status', 'completed')->count() }} projects</span>
                 </div>
                 <div class="space-y-6">
-                    <!-- Completed Project 1 -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center mb-4">
-                                        <h3 class="text-lg font-bold text-gray-800 mr-4">Brand Identity Design</h3>
-                                        <span class="px-3 py-1 text-sm font-medium text-green-600 bg-green-50 rounded-full">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <p class="text-gray-600 mb-6">Complete brand identity design including logo, color palette, and brand guidelines.</p>
-                                    
-                                    <!-- Timeline -->
-                                    <div class="relative mb-6">
-                                        <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                                        <div class="space-y-6">
-                                            <!-- Timeline Items -->
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-green-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Discovery</h4>
-                                                        <p class="text-sm text-gray-500">Brand research and analysis</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-green-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Logo Design</h4>
-                                                        <p class="text-sm text-gray-500">Primary and secondary logos</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
-                                            <div class="relative pl-6">
-                                                <div class="absolute left-[-5px] top-0 w-3 h-3 bg-green-600 rounded-full"></div>
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">Brand Guidelines</h4>
-                                                        <p class="text-sm text-gray-500">Style guide and documentation</p>
-                                                    </div>
-                                                    <span class="text-sm text-gray-500">Completed</span>
-                                                </div>
-                                            </div>
+                    @forelse($projects->where('status', 'completed') as $project)
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-4">
+                                            <h3 class="text-lg font-bold text-gray-800 mr-4">{{ $project->title }}</h3>
+                                            <span class="px-3 py-1 text-sm font-medium 
+                                                @if($project->status == 'open') text-green-600 bg-green-50
+                                                @elseif($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                                @elseif($project->status == 'completed') text-purple-600 bg-purple-50
+                                                @else text-yellow-600 bg-yellow-50
+                                                @endif rounded-full">
+                                                {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                            </span>
                                         </div>
-                                    </div>
-
-                                    <!-- Project Details -->
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div class="flex items-center">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                                 alt="Designer" 
-                                                 class="w-8 h-8 rounded-full mr-3">
+                                        <p class="text-gray-600 mb-6">{{ $project->description }}</p>
+                                        
+                                        <!-- Project Details -->
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                            <div class="flex items-center">
+                                                @if($project->developer)
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($project->developer->name) }}&background=6366f1&color=fff" 
+                                                     alt="{{ $project->developer->name }}" 
+                                                     class="w-8 h-8 rounded-full mr-3">
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">{{ $project->developer->name }}</div>
+                                                    <div class="text-xs text-gray-500">Developer</div>
+                                                </div>
+                                                @else
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">No developer assigned</div>
+                                                </div>
+                                                @endif
+                                            </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-800">Michael Brown</div>
-                                                <div class="text-xs text-gray-500">Brand Designer</div>
+                                                <div class="text-sm text-gray-500">Due Date</div>
+                                                <div class="font-medium text-gray-800">{{ $project->deadline->format('F j, Y') }}</div>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm text-gray-500">Budget</div>
+                                                <div class="font-medium text-gray-800">${{ number_format($project->budget, 2) }}</div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Completed Date</div>
-                                            <div class="font-medium text-gray-800">February 15, 2024</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm text-gray-500">Budget</div>
-                                            <div class="font-medium text-gray-800">$5,500</div>
+                                        
+                                        <!-- Tasks Section -->
+                                        <div class="mt-4">
+                                            <button onclick="toggleTasks('{{ $project->id }}')" class="flex items-center text-indigo-600 hover:text-indigo-700">
+                                                <svg id="icon-{{ $project->id }}" class="w-5 h-5 mr-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                                <span>Tasks ({{ $project->tasks->count() }})</span>
+                                            </button>
+                                            
+                                            <div id="tasks-{{ $project->id }}" class="hidden mt-4 border-t pt-4">
+                                                @if($project->tasks->count() > 0)
+                                                    <div class="space-y-4">
+                                                        @foreach($project->tasks as $task)
+                                                            <div class="bg-gray-50 rounded-lg p-4">
+                                                                <div class="flex justify-between items-start">
+                                                                    <div>
+                                                                        <h4 class="font-medium text-gray-800">{{ $task->title }}</h4>
+                                                                        <p class="text-sm text-gray-600 mt-1">{{ $task->description }}</p>
+                                                                    </div>
+                                                                    <span class="px-2 py-1 text-xs font-medium 
+                                                                        @if($task->status == 'pending') text-yellow-600 bg-yellow-50
+                                                                        @elseif($task->status == 'in_progress') text-blue-600 bg-blue-50
+                                                                        @else text-green-600 bg-green-50
+                                                                        @endif rounded-full">
+                                                                        {{ ucfirst($task->status) }}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="mt-3 flex justify-between items-center text-xs text-gray-500">
+                                                                    <div>
+                                                                        <span class="font-medium">Priority:</span> 
+                                                                        <span class="
+                                                                            @if($task->priority == 'low') text-green-600
+                                                                            @elseif($task->priority == 'medium') text-yellow-600
+                                                                            @else text-red-600
+                                                                            @endif">
+                                                                            {{ ucfirst($task->priority) }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="font-medium">Due:</span> {{ $task->due_date->format('M j, Y') }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <p class="text-gray-500 text-sm">No tasks have been created for this project yet.</p>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="ml-6">
-                                    <button class="px-4 py-2 text-indigo-600 hover:text-indigo-700">
-                                        View Details
-                                    </button>
+                                    <div class="ml-6">
+                                        <button class="px-4 py-2 text-indigo-600 hover:text-indigo-700">
+                                            View Details
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+                            <p class="text-gray-500">No completed projects found.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -560,6 +514,20 @@
                 closeModal();
             }
         });
+        
+        // Toggle tasks section
+        function toggleTasks(projectId) {
+            const tasksSection = document.getElementById(`tasks-${projectId}`);
+            const icon = document.getElementById(`icon-${projectId}`);
+            
+            if (tasksSection.classList.contains('hidden')) {
+                tasksSection.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                tasksSection.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
     </script>
 </body>
 </html> 

@@ -52,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Client Projects Route
     Route::get('/client/projects', function () {
-        $projects = auth()->user()->projects()->latest()->get();
+        $projects = auth()->user()->projects()->with('tasks')->latest()->get();
         $services = \App\Models\Service::all();
         return view('client.projects', compact('projects', 'services'));
     })->name('client.projects');
