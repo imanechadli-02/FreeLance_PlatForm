@@ -74,6 +74,18 @@ Route::middleware(['auth'])->group(function () {
         
         Route::put('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
         Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
+
+        // Admin Projects Route
+        Route::get('/projects', function () {
+            $projects = \App\Models\Project::with(['client', 'developer', 'service'])->latest()->get();
+            return view('admin.projects', compact('projects'));
+        })->name('admin.projects');
+        
+        // Admin Project Delete Route
+        Route::delete('/projects/{project}', function (\App\Models\Project $project) {
+            $project->delete();
+            return redirect()->route('admin.projects')->with('success', 'Project deleted successfully');
+        })->name('admin.projects.delete');
     });
 
     // Service Management Routes
