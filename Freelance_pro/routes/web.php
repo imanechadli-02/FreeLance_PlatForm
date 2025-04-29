@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\MessageController;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -61,6 +62,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/client/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('/client/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
+    // Client Messages Route
+    Route::get('/client/messages', [MessageController::class, 'index'])->name('client.messages');
+    Route::get('/client/messages/project/{project}', [MessageController::class, 'show'])->name('client.messages.show');
+    Route::post('/client/messages/project/{project}', [MessageController::class, 'store'])->name('client.messages.store');
+
     // User Management Routes
     Route::prefix('admin')->group(function () {
         Route::get('/users', [AdminController::class, 'index'])->name('users.index');
@@ -81,16 +87,12 @@ Route::middleware(['auth'])->group(function () {
             return view('admin.projects', compact('projects'));
         })->name('admin.projects');
         
-        // Admin Project Show Route
         Route::get('/projects/{project}', function (\App\Models\Project $project) {
             return view('admin.project-details', compact('project'));
         })->name('admin.projects.show');
         
-        // Admin Project Details AJAX Route
         Route::get('/projects/{project}/details', function (\App\Models\Project $project) {
             $project->load(['client', 'developer', 'service', 'tasks']);
-            
-            // Format dates for JSON response
             $project->deadline = $project->deadline ? $project->deadline->format('M d, Y') : null;
             
             $tasks = $project->tasks->map(function($task) {
@@ -110,7 +112,6 @@ Route::middleware(['auth'])->group(function () {
             ]);
         })->name('admin.projects.details');
         
-        // Admin Project Delete Route
         Route::delete('/projects/{project}', function (\App\Models\Project $project) {
             $project->delete();
             return redirect()->route('admin.projects')->with('success', 'Project deleted successfully');
@@ -138,9 +139,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/developer/tasks', [TaskController::class, 'store'])->name('developer.tasks.store');
     Route::put('/developer/tasks/{task}', [TaskController::class, 'updateStatus'])->name('developer.tasks.updateStatus');
 
+    // Developer Messages Route
+    Route::get('/developer/messages', [MessageController::class, 'index'])->name('developer.messages');
+    Route::get('/developer/messages/project/{project}', [MessageController::class, 'show'])->name('developer.messages.show');
+    Route::post('/developer/messages/project/{project}', [MessageController::class, 'store'])->name('developer.messages.store');
+
     // Project Tasks Routes
     Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'show'])
         ->name('developer.projects.tasks');
+
+    // Messages Routes
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/project/{project}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/project/{project}', [MessageController::class, 'store'])->name('messages.store');
 });
 
 // Approved User Routes
