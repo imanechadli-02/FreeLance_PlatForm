@@ -33,7 +33,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     // Profile Routes
     Route::get('/profile', function () {
-        return view('client.profile');
+        if (auth()->user()->role === 'developer') {
+            return view('developer.profile');
+        } elseif (auth()->user()->role === 'client') {
+            return view('client.profile');
+        } elseif (auth()->user()->role === 'admin') {
+            return view('admin.profile');
+        }
     })->name('profile');
     Route::put('/profile', [LoginController::class, 'updateProfile'])->name('profile.update');
 
@@ -43,10 +49,6 @@ Route::middleware(['auth'])->group(function () {
         $services = \App\Models\Service::all();
         return view('client.dashboard', compact('projects', 'services'));
     })->name('client.dashboard');
-    Route::get('/developer/dashboard', function () {
-        $projects = \App\Models\Project::latest()->get();
-        return view('developer.dashboard', compact('projects'));
-    })->name('developer.dashboard');
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
@@ -131,18 +133,21 @@ Route::middleware(['auth'])->group(function () {
     // Developer Project Routes
     Route::post('/projects/{project}/apply', [ProjectController::class, 'apply'])->name('projects.apply');
 
-    // Developer Projects Routes
-    Route::get('/developer/projects', [ProjectController::class, 'index'])->name('developer.projects.index');
+    // Developer Routes
+    Route::prefix('developer')->name('developer.')->group(function () {
+        Route::get('/dashboard', function () {
+            $projects = \App\Models\Project::latest()->get();
+            return view('developer.dashboard', compact('projects'));
+        })->name('dashboard');
 
-    // Developer Tasks Route
-    Route::get('/developer/tasks/{project?}', [ProjectTaskController::class, 'index'])->name('developer.tasks');
-    Route::post('/developer/tasks', [TaskController::class, 'store'])->name('developer.tasks.store');
-    Route::put('/developer/tasks/{task}', [TaskController::class, 'updateStatus'])->name('developer.tasks.updateStatus');
-
-    // Developer Messages Route
-    Route::get('/developer/messages', [MessageController::class, 'index'])->name('developer.messages');
-    Route::get('/developer/messages/project/{project}', [MessageController::class, 'show'])->name('developer.messages.show');
-    Route::post('/developer/messages/project/{project}', [MessageController::class, 'store'])->name('developer.messages.store');
+        Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
+        Route::get('/tasks/{project?}', [ProjectTaskController::class, 'index'])->name('tasks');
+        Route::get('/messages', [MessageController::class, 'index'])->name('messages');
+        Route::get('/messages/project/{project}', [MessageController::class, 'show'])->name('messages.show');
+        Route::post('/messages/project/{project}', [MessageController::class, 'store'])->name('messages.store');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::put('/tasks/{task}', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+    });
 
     // Project Tasks Routes
     Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'show'])
