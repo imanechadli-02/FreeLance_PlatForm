@@ -69,18 +69,24 @@
             <div class="p-4 border-t">
                 <div class="relative">
                     <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                             alt="Admin" 
-                             class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <div class="font-medium">{{ Auth::user()->name }}</div>
-                            <div class="text-sm text-gray-500">Admin</div>
+                        <div class="h-12 w-12 rounded-full overflow-hidden">
+                            @if(Auth::user()->profil_picture)
+                                <img src="{{ asset(Auth::user()->profil_picture) }}" alt="Profile Picture" class="h-full w-full object-cover">
+                            @else
+                                <div class="h-full w-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-gray-500 text-xl">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="cursor-pointer ml-4">
+                            <div class="font-medium hover:text-indigo-600" id="userNameButton">{{ Auth::user()->name }}</div>
+                            <div class="text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
                     </button>
 
                     <!-- Dropdown Menu -->
                     <div id="userMenu" class="hidden absolute bottom-full left-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 mb-2">
-                        <a href="/admin/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{{ route('admin.profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -119,11 +125,21 @@
             <div class="md:col-span-1">
                 <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                     <div class="text-center mb-6">
-                        <img src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
-                             alt="Profile" 
-                             class="w-32 h-32 rounded-full mx-auto mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">{{ Auth::user()->name }}</h2>
-                        <p class="text-gray-600">Admin Account</p>
+                        <div class="flex items-center">
+                            <div class="h-12 w-12 rounded-full overflow-hidden">
+                                @if(Auth::user()->profil_picture)
+                                    <img src="{{ asset(Auth::user()->profil_picture) }}" alt="Profile Picture" class="h-full w-full object-cover">
+                                @else
+                                    <div class="h-full w-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-gray-500 text-xl">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-lg font-semibold text-gray-900">{{ Auth::user()->name }}</h2>
+                                <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
                     </div>
                     <nav class="space-y-2">
                         <a href="#profile" class="block px-4 py-2 text-indigo-600 bg-indigo-50 rounded-lg">Profile Information</a>
@@ -156,7 +172,7 @@
                         <div class="flex items-center space-x-6">
                             <div class="relative">
                                 <img id="profile-preview" 
-                                     src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                                     src="{{ Auth::user()->profil_picture ? asset(Auth::user()->profil_picture) : asset('images/default-profile.png') }}" 
                                      alt="Profile" 
                                      class="w-24 h-24 rounded-full object-cover">
                                 <label for="profile-picture" class="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-50">
@@ -322,22 +338,41 @@
             }
         }
 
-        // User Menu Toggle
-        const userMenuButton = document.getElementById('userMenuButton');
-        const userMenu = document.getElementById('userMenu');
+        document.addEventListener('DOMContentLoaded', function() {
+            // User menu toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userNameButton = document.getElementById('userNameButton');
+            const userMenu = document.getElementById('userMenu');
 
-        userMenuButton.addEventListener('click', () => {
-            userMenu.classList.toggle('hidden');
-        });
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userMenu.classList.toggle('hidden');
+                });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
-                userMenu.classList.add('hidden');
+                // Add click event for the name
+                if (userNameButton) {
+                    userNameButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        userMenu.classList.toggle('hidden');
+                    });
+                }
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+
+                // Prevent menu from closing when clicking inside it
+                userMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             }
         });
-
-        
     </script>
 </body>
 </html> 

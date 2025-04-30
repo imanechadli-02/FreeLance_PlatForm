@@ -72,12 +72,19 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('profil_picture')) {
+            // Delete old profile picture if it exists
             if ($user->profil_picture) {
-                Storage::delete('public/' . $user->profil_picture);
+                $oldPath = str_replace('storage/', '', $user->profil_picture);
+                if (file_exists(public_path('storage/' . $oldPath))) {
+                    unlink(public_path('storage/' . $oldPath));
+                }
             }
 
-            $path = $request->file('profil_picture')->store('profile-pictures', 'public');
-            $validated['profil_picture'] = $path;
+            // Store new profile picture in public/storage/profile-pictures
+            $file = $request->file('profil_picture');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/profile-pictures'), $filename);
+            $validated['profil_picture'] = 'storage/profile-pictures/' . $filename;
         }
 
         $user->update($validated);

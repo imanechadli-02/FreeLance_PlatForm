@@ -72,18 +72,18 @@
             <div class="p-4 border-t">
                 <div class="relative">
                     <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                        <img src="{{ Auth::user()->profil_picture ? asset(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                              alt="Admin" 
                              class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <div class="font-medium">{{ Auth::user()->name }}</div>
+                        <div class="cursor-pointer">
+                            <div class="font-medium hover:text-indigo-600" id="userNameButton">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Admin</div>
                         </div>
                     </button>
 
                     <!-- Dropdown Menu -->
                     <div id="userMenu" class="hidden absolute bottom-full left-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 mb-2">
-                        <a href="/admin/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{{ route('admin.profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -459,6 +459,42 @@
             const modal = document.getElementById('projectDetailsModal');
             modal.classList.add('hidden');
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // User menu toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userNameButton = document.getElementById('userNameButton');
+            const userMenu = document.getElementById('userMenu');
+
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userMenu.classList.toggle('hidden');
+                });
+
+                // Add click event for the name
+                if (userNameButton) {
+                    userNameButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        userMenu.classList.toggle('hidden');
+                    });
+                }
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+
+                // Prevent menu from closing when clicking inside it
+                userMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
     </script>
 </body>
 </html> 
