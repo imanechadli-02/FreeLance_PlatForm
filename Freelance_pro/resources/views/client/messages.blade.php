@@ -13,8 +13,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .chat-container {
-            height: calc(100vh - 200px);
+        #projectsDropdown {
+            max-height: 400px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        .rotate-180 {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -58,7 +63,7 @@
             <!-- User Profile -->
             <div class="p-4 border-t">
                 <div class="flex items-center">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                    <img src="{{ auth()->user()->profile_photo_url }}" 
                          alt="User" 
                          class="w-10 h-10 rounded-full mr-3">
                     <div>
@@ -71,174 +76,200 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="ml-64 p-8">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">Messages</h1>
-                <p class="text-gray-600">Communicate with your team members</p>
-            </div>
-        </div>
-
-        <!-- Chat Interface -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div class="flex h-[calc(100vh-200px)]">
-                <!-- Chat List -->
-                <div class="w-80 border-r border-gray-200">
-                    <!-- Search -->
-                    <div class="p-4 border-b border-gray-200">
-                        <div class="relative">
-                            <input type="text" 
-                                   placeholder="Search conversations..." 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <svg class="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Chat List -->
-                    <div class="overflow-y-auto h-[calc(100vh-280px)]">
-                        <!-- Active Chat -->
-                        <div class="p-4 bg-indigo-50 border-l-4 border-indigo-600">
-                            <div class="flex items-center">
-                                <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                         alt="John Smith" 
-                                         class="w-12 h-12 rounded-full">
-                                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                                </div>
-                                <div class="ml-4 flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <h3 class="font-medium text-gray-900">John Smith</h3>
-                                        <span class="text-sm text-gray-500">2m ago</span>
-                                    </div>
-                                    <p class="text-sm text-gray-600 truncate">Latest updates on the e-commerce project...</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Other Chats -->
-                        <div class="p-4 hover:bg-gray-50 cursor-pointer">
-                            <div class="flex items-center">
-                                <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                         alt="Michael Brown" 
-                                         class="w-12 h-12 rounded-full">
-                                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></span>
-                                </div>
-                                <div class="ml-4 flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <h3 class="font-medium text-gray-900">Michael Brown</h3>
-                                        <span class="text-sm text-gray-500">1h ago</span>
-                                    </div>
-                                    <p class="text-sm text-gray-600 truncate">Mobile app development progress...</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 hover:bg-gray-50 cursor-pointer">
-                            <div class="flex items-center">
-                                <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                                         alt="Sarah Johnson" 
-                                         class="w-12 h-12 rounded-full">
-                                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                                </div>
-                                <div class="ml-4 flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <h3 class="font-medium text-gray-900">Sarah Johnson</h3>
-                                        <span class="text-sm text-gray-500">2h ago</span>
-                                    </div>
-                                    <p class="text-sm text-gray-600 truncate">Marketing campaign strategy...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <main class="ml-64 h-screen flex">
+        <!-- Chat List -->
+        <div class="w-80 border-r bg-white">
+            <!-- Search -->
+            <div class="p-4 border-b">
+                <div class="relative">
+                    <input type="text" 
+                           placeholder="Search conversations..." 
+                           class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
                 </div>
+            </div>
 
-                <!-- Chat Window -->
-                <div class="flex-1 flex flex-col bg-white">
-                    @if(isset($project) && $project->developer)
-                        <!-- Chat Header -->
-                        <div class="p-4 border-b">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    @php
-                                        $chatUser = auth()->user()->role === 'client' ? $project->developer : $project->client;
-                                    @endphp
-                                    <img src="{{ $chatUser->profile_photo_url ?? asset('images/default-avatar.png') }}" 
-                                         alt="{{ $chatUser->name ?? 'User' }}" 
-                                         class="w-10 h-10 rounded-full mr-3">
-                                    <div>
-                                        <h3 class="font-medium">{{ $chatUser->name ?? 'Unknown User' }}</h3>
-                                        <p class="text-sm text-gray-500">Project: {{ $project->title ?? 'Untitled Project' }}</p>
-                                    </div>
-                                </div>
+            <!-- Active Chats -->
+            <div class="p-4">
+                <h3 class="text-sm font-medium text-gray-500 mb-4">Active Chats</h3>
+                <div class="space-y-4">
+                    @forelse($conversations as $projectId => $conversation)
+                        @php
+                            $project = $conversation->first()->project;
+                            $otherUser = auth()->user()->role === 'developer' ? $project->client : $project->developer;
+                            $lastMessage = $conversation->first();
+                        @endphp
+                        
+                        <a href="{{ route('client.messages.show', $project) }}" class="flex items-center p-3 {{ isset($selectedProject) && $selectedProject->id == $project->id ? 'bg-indigo-50' : 'hover:bg-gray-50' }} rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <img src="{{ $otherUser->profile_photo_url }}" 
+                                     alt="{{ $otherUser->name }}" 
+                                     class="w-12 h-12 rounded-full">
                             </div>
+                            <div class="ml-4 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium">{{ $otherUser->name }}</h4>
+                                        <p class="text-xs text-gray-500">{{ $project->title }}</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500">{{ $lastMessage->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 truncate">{{ $lastMessage->message }}</p>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="p-4 text-center text-gray-500">
+                            No messages yet. Start a conversation!
                         </div>
+                    @endforelse
+                </div>
+            </div>
 
-                        <!-- Chat Messages -->
-                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                            @forelse($messages->reverse() as $message)
-                                <div class="flex {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
-                                    <div class="max-w-[70%]">
-                                        <div class="flex items-center {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} mb-1">
-                                            <span class="text-xs text-gray-500">{{ $message->created_at->format('h:i A') }}</span>
-                                        </div>
-                                        <div class="rounded-lg p-3 {{ $message->sender_id == auth()->id() ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900' }}">
-                                            {{ $message->message }}
-                                        </div>
+            <!-- Active Projects -->
+            <div class="p-4 border-t">
+                <button id="projectsDropdownBtn" class="w-full flex items-center justify-between text-sm font-medium text-gray-500 mb-4 hover:text-indigo-600 focus:outline-none">
+                    <span>All Projects ({{ $activeProjects->count() }})</span>
+                    <svg id="projectsDropdownArrow" class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="projectsDropdown" class="space-y-4">
+                    @if($activeProjects->count() > 0)
+                        @foreach($activeProjects as $project)
+                            <a href="{{ route('client.messages.show', $project) }}" class="block p-3 hover:bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">{{ $project->title }}</h4>
+                                        <p class="text-sm text-gray-500">{{ $project->developer->name ?? 'No developer assigned' }}</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="px-2 py-1 text-xs font-medium 
+                                            @if($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                            @elseif($project->status == 'pending') text-yellow-600 bg-yellow-50
+                                            @else text-green-600 bg-green-50
+                                            @endif rounded-full">
+                                            {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                        </span>
                                     </div>
                                 </div>
-                            @empty
-                                <div class="text-center text-gray-500">
-                                    No messages yet. Start the conversation!
+                                <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                    <div>
+                                        <span class="font-medium">Tasks:</span> 
+                                        <span class="text-gray-900">{{ $project->tasks->count() }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium">Due:</span> 
+                                        <span class="text-gray-900">{{ $project->deadline->format('M d, Y') }}</span>
+                                    </div>
                                 </div>
-                            @endforelse
-                        </div>
-
-                        <!-- Chat Input -->
-                        <div class="p-4 border-t">
-                            <form action="{{ route('client.messages.store', $project) }}" method="POST">
-                                @csrf
-                                <div class="flex items-center space-x-4">
-                                    <input type="text" 
-                                           name="message" 
-                                           class="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-                                           placeholder="Type your message..."
-                                           required>
-                                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                                        Send
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            </a>
+                        @endforeach
                     @else
-                        <div class="flex-1 flex items-center justify-center text-gray-500">
-                            Select a conversation to start chatting
+                        <div class="text-center text-sm text-gray-500">
+                            No projects found
                         </div>
                     @endif
                 </div>
             </div>
         </div>
+
+        <!-- Chat Window -->
+        <div class="flex-1 flex flex-col">
+            @if(isset($selectedProject) && $selectedProject)
+                <!-- Chat Header -->
+                <div class="p-4 border-b bg-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="{{ $selectedProject->developer->profile_photo_url ?? asset('images/default-avatar.png') }}" 
+                                 alt="{{ $selectedProject->developer->name ?? 'Developer' }}" 
+                                 class="w-10 h-10 rounded-full mr-3">
+                            <div>
+                                <h3 class="font-medium">{{ $selectedProject->developer->name ?? 'Unknown Developer' }}</h3>
+                                <p class="text-sm text-gray-500">Project: {{ $selectedProject->title }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+                    @if(isset($messages) && $messages->count() > 0)
+                        @foreach($messages as $message)
+                            <div class="flex {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
+                                <div class="max-w-[70%]">
+                                    <div class="flex items-center {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} mb-1">
+                                        <span class="text-xs text-gray-500">{{ $message->created_at->format('h:i A') }}</span>
+                                    </div>
+                                    <div class="rounded-lg p-3 {{ $message->sender_id == auth()->id() ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900' }}">
+                                        {{ $message->message }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-center text-gray-500">
+                            No messages yet. Start the conversation!
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Chat Input -->
+                @if($selectedProject->developer_id)
+                    <div class="p-4 border-t bg-white">
+                        <form action="{{ route('client.messages.store', $selectedProject) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="project_id" value="{{ $selectedProject->id }}">
+                            <div class="flex items-center space-x-4">
+                                <input type="text" 
+                                       name="message" 
+                                       class="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                       placeholder="Type your message..."
+                                       required>
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                    Send
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                @else
+                    <div class="p-4 border-t bg-white text-center text-gray-500">
+                        No developer assigned to this project yet. You can start messaging once a developer is assigned.
+                    </div>
+                @endif
+            @else
+                <div class="flex-1 flex items-center justify-center text-gray-500">
+                    Select a project to start chatting
+                </div>
+            @endif
+        </div>
     </main>
 
     <script>
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            const projectsBtn = document.getElementById('projectsBtn');
-            const projectsList = document.getElementById('projectsList');
-            const projectsArrow = document.getElementById('projectsArrow');
+            // Active Projects Dropdown
+            const projectsDropdownBtn = document.getElementById('projectsDropdownBtn');
+            const projectsDropdown = document.getElementById('projectsDropdown');
+            const projectsDropdownArrow = document.getElementById('projectsDropdownArrow');
             
-            projectsBtn.addEventListener('click', function() {
-                projectsList.classList.toggle('hidden');
-                projectsArrow.classList.toggle('rotate-180');
-            });
+            if (projectsDropdownBtn && projectsDropdown && projectsDropdownArrow) {
+                projectsDropdownBtn.addEventListener('click', function() {
+                    if (projectsDropdown.style.display === 'none') {
+                        projectsDropdown.style.display = 'block';
+                        projectsDropdownArrow.classList.add('rotate-180');
+                    } else {
+                        projectsDropdown.style.display = 'none';
+                        projectsDropdownArrow.classList.remove('rotate-180');
+                    }
+                });
+            }
+
+            // Auto-scroll to bottom when page loads
+            const chatMessages = document.querySelector('.flex-1.overflow-y-auto');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         });
     </script>
 </body>

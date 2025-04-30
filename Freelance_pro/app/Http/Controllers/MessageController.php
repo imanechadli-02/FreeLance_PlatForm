@@ -10,42 +10,79 @@ use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $user = Auth::user();
         
-        // Get conversations grouped by project
-        $conversations = Message::where(function($query) use ($user) {
-            $query->where('sender_id', $user->id)
-                  ->orWhere('receiver_id', $user->id);
-        })
-        ->with(['project', 'project.client', 'project.developer'])
-        ->latest()
-        ->get()
-        ->groupBy('project_id');
+        // Initialize collections
+        $conversations = collect();
+        $activeProjects = collect();
+        $messages = collect();
+        $selectedProject = null;
 
-        // Get active projects for the current user
-        $activeProjects = $user->role === 'developer' 
-            ? Project::where('developer_id', $user->id)
+        try {
+            // Get active projects based on user role
+            $activeProjects = $user->role === 'developer' 
+                ? Project::where('developer_id', $user->id)
                     ->where('status', '!=', 'completed')
-                    ->with(['client', 'service', 'tasks'])
-                    ->latest()
+                    ->with(['client', 'tasks', 'messages' => function($query) {
+                        $query->orderBy('created_at', 'desc');
+                    }])
                     ->get()
-            : Project::where('client_id', $user->id)
-                    ->where('status', '!=', 'completed')
-                    ->with(['developer', 'service', 'tasks'])
+                : Project::where('client_id', $user->id)
+                    ->with(['developer', 'tasks', 'messages' => function($query) {
+                        $query->orderBy('created_at', 'desc');
+                    }])
                     ->latest()
                     ->get();
 
-        // Initialize empty messages collection for the index view
-        $messages = collect();
-        $project = null;
+            \Log::info('Active Projects Count: ' . $activeProjects->count());
+            \Log::info('Active Projects: ' . $activeProjects->pluck('title')->toJson());
 
-        if ($user->role === 'developer') {
-            return view('developer.messages', compact('conversations', 'activeProjects', 'messages', 'project'));
-        } else {
-            return view('client.messages', compact('conversations', 'activeProjects', 'messages', 'project'));
+            // Get conversations for the sidebar
+            $conversations = collect();
+            foreach ($activeProjects as $project) {
+                $lastMessage = Message::where('project_id', $project->id)
+                    ->where(function($query) use ($user) {
+                        $query->where('sender_id', $user->id)
+                            ->orWhere('receiver_id', $user->id);
+                    })
+                    ->with(['sender', 'receiver'])
+                    ->latest()
+                    ->first();
+
+                if ($lastMessage) {
+                    $conversations->put($project->id, collect([$lastMessage]));
+                }
+            }
+
+            // If there are active projects, select the first one by default
+            if ($activeProjects->isNotEmpty()) {
+                $selectedProject = $activeProjects->first();
+                $messages = Message::where('project_id', $selectedProject->id)
+                    ->where(function($query) use ($user) {
+                        $query->where('sender_id', $user->id)
+                            ->orWhere('receiver_id', $user->id);
+                    })
+                    ->with(['sender', 'receiver'])
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in MessageController@index: ' . $e->getMessage());
         }
+
+        return view($user->role === 'developer' ? 'developer.messages' : 'client.messages', [
+            'conversations' => $conversations,
+            'activeProjects' => $activeProjects,
+            'selectedProject' => $selectedProject,
+            'messages' => $messages
+        ]);
     }
 
     public function show(Project $project)
@@ -54,46 +91,56 @@ class MessageController extends Controller
         
         // Verify the user has access to this project
         if ($user->role === 'developer' && $project->developer_id !== $user->id) {
-            abort(403);
+            abort(403, 'Unauthorized access.');
         }
         if ($user->role === 'client' && $project->client_id !== $user->id) {
-            abort(403);
+            abort(403, 'Unauthorized access.');
         }
 
         // Get all messages for this project
         $messages = Message::where('project_id', $project->id)
             ->with(['sender', 'receiver'])
-            ->latest()
+            ->orderBy('created_at', 'asc')
             ->get();
 
-        // Get conversations for the sidebar
-        $conversations = Message::where(function($query) use ($user) {
-            $query->where('sender_id', $user->id)
-                  ->orWhere('receiver_id', $user->id);
-        })
-        ->with(['project', 'project.client', 'project.developer'])
-        ->latest()
-        ->get()
-        ->groupBy('project_id');
-
-        // Get active projects for the current user
+        // Get active projects for the sidebar
         $activeProjects = $user->role === 'developer' 
             ? Project::where('developer_id', $user->id)
-                    ->where('status', '!=', 'completed')
-                    ->with(['client', 'service', 'tasks'])
-                    ->latest()
-                    ->get()
+                ->where('status', '!=', 'completed')
+                ->with(['client', 'tasks', 'messages' => function($query) {
+                    $query->orderBy('created_at', 'desc');
+                }])
+                ->get()
             : Project::where('client_id', $user->id)
-                    ->where('status', '!=', 'completed')
-                    ->with(['developer', 'service', 'tasks'])
-                    ->latest()
-                    ->get();
+                ->with(['developer', 'tasks', 'messages' => function($query) {
+                    $query->orderBy('created_at', 'desc');
+                }])
+                ->latest()
+                ->get();
 
-        if ($user->role === 'developer') {
-            return view('developer.messages', compact('conversations', 'messages', 'project', 'activeProjects'));
-        } else {
-            return view('client.messages', compact('conversations', 'messages', 'project', 'activeProjects'));
+        // Get conversations for the sidebar
+        $conversations = collect();
+        foreach ($activeProjects as $activeProject) {
+            $lastMessage = Message::where('project_id', $activeProject->id)
+                ->where(function($query) use ($user) {
+                    $query->where('sender_id', $user->id)
+                        ->orWhere('receiver_id', $user->id);
+                })
+                ->with(['sender', 'receiver'])
+                ->latest()
+                ->first();
+
+            if ($lastMessage) {
+                $conversations->put($activeProject->id, collect([$lastMessage]));
+            }
         }
+
+        return view($user->role === 'developer' ? 'developer.messages' : 'client.messages', [
+            'selectedProject' => $project,
+            'messages' => $messages,
+            'activeProjects' => $activeProjects,
+            'conversations' => $conversations
+        ]);
     }
 
     public function store(Request $request, Project $project)
@@ -102,26 +149,50 @@ class MessageController extends Controller
         
         // Verify the user has access to this project
         if ($user->role === 'developer' && $project->developer_id !== $user->id) {
-            abort(403);
+            abort(403, 'Unauthorized access.');
         }
         if ($user->role === 'client' && $project->client_id !== $user->id) {
-            abort(403);
+            abort(403, 'Unauthorized access.');
         }
 
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
 
+        // Double-check the project exists and belongs to the user
+        $validProject = Project::where('id', $project->id)
+            ->where(function($query) use ($user) {
+                if ($user->role === 'developer') {
+                    $query->where('developer_id', $user->id);
+                } else {
+                    $query->where('client_id', $user->id);
+                }
+            })
+            ->first();
+
+        if (!$validProject) {
+            abort(403, 'Invalid project selected.');
+        }
+
         // Determine the receiver based on user role
         $receiverId = $user->role === 'developer' ? $project->client_id : $project->developer_id;
 
-        $message = Message::create([
+        // Create the message
+        Message::create([
+            'project_id' => $project->id,
             'sender_id' => $user->id,
             'receiver_id' => $receiverId,
-            'project_id' => $project->id,
             'message' => $request->message,
         ]);
 
-        return redirect()->back();
+        // Get the current route name to determine where to redirect
+        $currentRoute = $request->route()->getName();
+        
+        // Redirect based on the current route
+        if (str_contains($currentRoute, 'developer')) {
+            return redirect()->route('developer.messages.show', $project);
+        } else {
+            return redirect()->route('client.messages.show', $project);
+        }
     }
 } 

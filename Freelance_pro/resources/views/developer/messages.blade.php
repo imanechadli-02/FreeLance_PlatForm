@@ -13,6 +13,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        #projectsDropdown {
+            max-height: 400px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -32,35 +40,13 @@
                     </svg>
                     Dashboard
                 </a>
-                <div>
-                    <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        My Projects
-                        <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="projectsList" class="hidden pl-12 space-y-1">
-                        @forelse($activeProjects as $project)
-                            <a href="{{ route('developer.tasks', $project) }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
-                                {{ $project->title }}
-                            </a>
-                        @empty
-                            <div class="py-2 text-sm text-gray-500">
-                                No active projects
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
                 <a href="{{ route('developer.tasks') }}" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Tasks
                 </a>
-                <a href="{{ route('messages.index') }}" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
+                <a href="{{ route('developer.messages') }}" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
@@ -116,7 +102,7 @@
                             $lastMessage = $conversation->first();
                         @endphp
                         
-                        <a href="{{ route('messages.show', $project) }}" class="flex items-center p-3 {{ isset($selectedProject) && $selectedProject->id == $project->id ? 'bg-indigo-50' : 'hover:bg-gray-50' }} rounded-lg cursor-pointer">
+                        <a href="{{ route('developer.messages.show', $project) }}" class="flex items-center p-3 {{ isset($selectedProject) && $selectedProject->id == $project->id ? 'bg-indigo-50' : 'hover:bg-gray-50' }} rounded-lg cursor-pointer">
                             <div class="relative">
                                 <img src="{{ $otherUser->profile_photo_url }}" 
                                      alt="{{ $otherUser->name }}" 
@@ -143,104 +129,115 @@
 
             <!-- Active Projects -->
             <div class="p-4 border-t">
-                <h3 class="text-sm font-medium text-gray-500 mb-4">Active Projects</h3>
-                <div class="space-y-4">
-                    @forelse($activeProjects as $project)
-                        <a href="{{ route('messages.show', $project) }}" class="block p-3 hover:bg-gray-50 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="font-medium text-gray-900">{{ $project->title }}</h4>
-                                    <p class="text-sm text-gray-500">{{ $project->client->name }}</p>
+                <button id="projectsDropdownBtn" class="w-full flex items-center justify-between text-sm font-medium text-gray-500 mb-4 hover:text-indigo-600 focus:outline-none">
+                    <span>All Projects ({{ $activeProjects->count() }})</span>
+                    <svg id="projectsDropdownArrow" class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="projectsDropdown" class="space-y-4">
+                    @if($activeProjects->count() > 0)
+                        @foreach($activeProjects as $project)
+                            <a href="{{ route('developer.messages.show', $project) }}" class="block p-3 hover:bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">{{ $project->title }}</h4>
+                                        <p class="text-sm text-gray-500">{{ $project->client->name }}</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="px-2 py-1 text-xs font-medium 
+                                            @if($project->status == 'in_progress') text-blue-600 bg-blue-50
+                                            @elseif($project->status == 'pending') text-yellow-600 bg-yellow-50
+                                            @else text-green-600 bg-green-50
+                                            @endif rounded-full">
+                                            {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <span class="px-2 py-1 text-xs font-medium 
-                                        @if($project->status == 'in_progress') text-blue-600 bg-blue-50
-                                        @elseif($project->status == 'pending') text-yellow-600 bg-yellow-50
-                                        @else text-green-600 bg-green-50
-                                        @endif rounded-full">
-                                        {{ ucfirst(str_replace('_', ' ', $project->status)) }}
-                                    </span>
+                                <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                    <div>
+                                        <span class="font-medium">Tasks:</span> 
+                                        <span class="text-gray-900">{{ $project->tasks->count() }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium">Due:</span> 
+                                        <span class="text-gray-900">{{ $project->deadline->format('M d, Y') }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
-                                <div>
-                                    <span class="font-medium">Tasks:</span> 
-                                    <span class="text-gray-900">{{ $project->tasks->count() }}</span>
-                                </div>
-                                <div>
-                                    <span class="font-medium">Due:</span> 
-                                    <span class="text-gray-900">{{ $project->deadline->format('M d, Y') }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
+                            </a>
+                        @endforeach
+                    @else
                         <div class="text-center text-sm text-gray-500">
-                            No active projects
+                            No projects found
                         </div>
-                    @endforelse
+                    @endif
                 </div>
             </div>
         </div>
 
         <!-- Chat Window -->
         <div class="flex-1 flex flex-col">
-            @if(isset($project))
+            @if(isset($selectedProject) && $selectedProject)
                 <!-- Chat Header -->
                 <div class="p-4 border-b bg-white">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            @php
-                                $chatUser = auth()->user()->role === 'developer' ? $project->client : $project->developer;
-                            @endphp
-                            <img src="{{ $chatUser->profile_photo_url }}" 
-                                 alt="{{ $chatUser->name }}" 
+                            <img src="{{ $selectedProject->client->profile_photo_url }}" 
+                                 alt="{{ $selectedProject->client->name }}" 
                                  class="w-10 h-10 rounded-full mr-3">
                             <div>
-                                <h3 class="font-medium">{{ $chatUser->name }}</h3>
+                                <h3 class="font-medium">{{ $selectedProject->client->name }}</h3>
+                                <p class="text-sm text-gray-500">Project: {{ $selectedProject->title }}</p>
                             </div>
-                        </div>
-                        <div class="text-sm text-gray-500">
-                            Project: {{ $project->title }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Chat Messages -->
-                <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                    @forelse($messages->reverse() as $message)
-                        <div class="flex {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
-                            <div class="max-w-[70%]">
-                                <div class="flex items-center {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} mb-1">
-                                    <span class="text-xs text-gray-500">{{ $message->created_at->format('h:i A') }}</span>
-                                </div>
-                                <div class="rounded-lg p-3 {{ $message->sender_id == auth()->id() ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900' }}">
-                                    {{ $message->message }}
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+                    @if(isset($messages) && $messages->count() > 0)
+                        @foreach($messages as $message)
+                            <div class="flex {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
+                                <div class="max-w-[70%]">
+                                    <div class="flex items-center {{ $message->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} mb-1">
+                                        <span class="text-xs text-gray-500">{{ $message->created_at->format('h:i A') }}</span>
+                                    </div>
+                                    <div class="rounded-lg p-3 {{ $message->sender_id == auth()->id() ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900' }}">
+                                        {{ $message->message }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
+                        @endforeach
+                    @else
                         <div class="text-center text-gray-500">
                             No messages yet. Start the conversation!
                         </div>
-                    @endforelse
+                    @endif
                 </div>
 
                 <!-- Chat Input -->
-                <div class="p-4 border-t bg-white">
-                    <form action="{{ route('messages.store', $project) }}" method="POST">
-                        @csrf
-                        <div class="flex items-center space-x-4">
-                            <input type="text" 
-                                   name="message" 
-                                   class="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-                                   placeholder="Type your message..."
-                                   required>
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                                Send
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                @if($selectedProject->developer_id)
+                    <div class="p-4 border-t bg-white">
+                        <form action="{{ route('developer.messages.store', $selectedProject) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="project_id" value="{{ $selectedProject->id }}">
+                            <div class="flex items-center space-x-4">
+                                <input type="text" 
+                                       name="message" 
+                                       class="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                       placeholder="Type your message..."
+                                       required>
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                    Send
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                @else
+                    <div class="p-4 border-t bg-white text-center text-gray-500">
+                        No developer assigned to this project yet. You can start messaging once a developer is assigned.
+                    </div>
+                @endif
             @else
                 <div class="flex-1 flex items-center justify-center text-gray-500">
                     Select a project to start chatting
@@ -250,20 +247,29 @@
     </main>
 
     <script>
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            const projectsBtn = document.getElementById('projectsBtn');
-            const projectsList = document.getElementById('projectsList');
-            const projectsArrow = document.getElementById('projectsArrow');
+            // Active Projects Dropdown
+            const projectsDropdownBtn = document.getElementById('projectsDropdownBtn');
+            const projectsDropdown = document.getElementById('projectsDropdown');
+            const projectsDropdownArrow = document.getElementById('projectsDropdownArrow');
             
-            projectsBtn.addEventListener('click', function() {
-                projectsList.classList.toggle('hidden');
-                projectsArrow.classList.toggle('rotate-180');
-            });
+            if (projectsDropdownBtn && projectsDropdown && projectsDropdownArrow) {
+                projectsDropdownBtn.addEventListener('click', function() {
+                    if (projectsDropdown.style.display === 'none') {
+                        projectsDropdown.style.display = 'block';
+                        projectsDropdownArrow.classList.add('rotate-180');
+                    } else {
+                        projectsDropdown.style.display = 'none';
+                        projectsDropdownArrow.classList.remove('rotate-180');
+                    }
+                });
+            }
+
+            // Auto-scroll to bottom when page loads
+            const chatMessages = document.querySelector('.flex-1.overflow-y-auto');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         });
     </script>
 </body>
