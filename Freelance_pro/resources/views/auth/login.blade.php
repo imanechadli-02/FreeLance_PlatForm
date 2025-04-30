@@ -26,14 +26,10 @@
                 <div class="text-2xl font-bold gradient-text">FreelancePro</div>
                 <div class="hidden md:flex space-x-8">
                     <a href="/" class="text-gray-600 hover:text-indigo-600 transition-colors">Home</a>
-                    <a href="/services" class="text-gray-600 hover:text-indigo-600 transition-colors">Services</a>
+                    <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Services</a>
                     <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Portfolio</a>
-                    <a href="/blog" class="text-gray-600 hover:text-indigo-600 transition-colors">Blog</a>
-                    <a href="/contact" class="text-gray-600 hover:text-indigo-600 transition-colors">Contact</a>
                 </div>
-                <a href="/register" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors">
-                    Get Started
-                </a>
+                
             </div>
         </div>
     </nav>

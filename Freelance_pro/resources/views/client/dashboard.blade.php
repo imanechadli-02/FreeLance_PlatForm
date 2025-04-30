@@ -61,13 +61,36 @@
 
             <!-- User Profile -->
             <div class="p-4 border-t">
-                <div class="flex items-center">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                         alt="Client" 
-                         class="w-10 h-10 rounded-full mr-3">
-                    <div>
-                        <div class="font-medium">Sarah Johnson</div>
-                        <div class="text-sm text-gray-500">Client</div>
+                <div class="relative">
+                    <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
+                        <img src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                             alt="{{ Auth::user()->name }}" 
+                             class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <div class="font-medium">{{ Auth::user()->name }}</div>
+                            <div class="text-sm text-gray-500">Client</div>
+                        </div>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="userMenu" class="hidden absolute left-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]">
+                        <div class="py-1" role="menu" aria-orientation="vertical">
+                            <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Edit Profile
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="block">
+                                @csrf
+                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -304,7 +327,7 @@
     </main>
 
     <!-- Edit Project Modal -->
-    <div id="editProjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div id="editProjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-[100]">
         <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-2xl bg-white">
             <div class="mt-3">
                 <div class="flex justify-between items-center mb-4">
@@ -397,8 +420,30 @@
             once: true
         });
 
+        // User menu toggle
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+
+        userMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Prevent menu from closing when clicking inside it
+        userMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
         function openEditModal(projectId, title, description, deadline, skillsRequired, serviceId) {
-            document.getElementById('editProjectModal').classList.remove('hidden');
+            const modal = document.getElementById('editProjectModal');
+            modal.classList.remove('hidden');
             document.getElementById('editProjectForm').action = `/client/projects/${projectId}`;
             
             // Set form values
@@ -414,7 +459,8 @@
         }
 
         function closeEditModal() {
-            document.getElementById('editProjectModal').classList.add('hidden');
+            const modal = document.getElementById('editProjectModal');
+            modal.classList.add('hidden');
         }
 
         function updateEditServicePrice(select) {

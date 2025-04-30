@@ -25,14 +25,18 @@
             <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold gradient-text">FreelancePro</div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Home</a>
+                    <a href="/" class="text-gray-600 hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Services</a>
                     <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Portfolio</a>
-                    <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Contact</a>
                 </div>
-                <a href="/register" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors">
-                    Get Started
-                  </a>
+                <div class="flex space-x-4">
+                    <a href="/login" class="border-2 border-indigo-600 text-indigo-600 px-6 py-2 rounded-full hover:bg-indigo-50 transition-colors">
+                        Sign In
+                    </a>
+                    <a href="/register" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors">
+                        Sign Up
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
