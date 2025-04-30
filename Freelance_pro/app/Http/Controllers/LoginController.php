@@ -95,11 +95,18 @@ class LoginController extends Controller
 
         if ($request->hasFile('profil_picture')) {
             if ($user->profil_picture) {
-                Storage::delete('public/' . $user->profil_picture);
+                // Delete old file from public/storage/profile-pictures
+                $oldPath = public_path('storage/profile-pictures/' . basename($user->profil_picture));
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
 
-            $path = $request->file('profil_picture')->store('profile-pictures', 'public');
-            $validated['profil_picture'] = $path;
+            // Store new file in public/storage/profile-pictures
+            $file = $request->file('profil_picture');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/profile-pictures'), $filename);
+            $validated['profil_picture'] = 'profile-pictures/' . $filename;
         }
 
         $user->update($validated);

@@ -17,7 +17,7 @@ class User extends Authenticatable
         'company_name',
         'company_website',
         'company_description',
-        'profile_picture',
+        'profil_picture',
         'role',
         'requested_role',
         'approved',

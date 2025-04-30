@@ -63,9 +63,9 @@
             <div class="p-4 border-t">
                 <div class="relative">
                     <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
-                        <img src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                        <img src="{{ Auth::user()->profil_picture ? asset('storage/' . Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                              alt="{{ Auth::user()->name }}" 
-                             class="w-10 h-10 rounded-full mr-3">
+                             class="w-10 h-10 rounded-full mr-3 object-cover">
                         <div>
                             <div class="font-medium">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Client</div>

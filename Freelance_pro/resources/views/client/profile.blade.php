@@ -29,7 +29,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
-                        <img src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                        <img src="{{ Auth::user()->profil_picture ? asset('storage/' . Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                              alt="Profile" 
                              class="w-10 h-10 rounded-full cursor-pointer">
                     </div>
@@ -57,7 +57,7 @@
                 <div class="md:col-span-1">
                     <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                         <div class="text-center mb-6">
-                            <img src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                            <img src="{{ Auth::user()->profil_picture ? asset('storage/' . Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                                  alt="Profile" 
                                  class="w-32 h-32 rounded-full mx-auto mb-4">
                             <h2 class="text-xl font-bold text-gray-900">{{ Auth::user()->name }}</h2>
@@ -96,7 +96,7 @@
                             <div class="flex items-center space-x-6">
                                 <div class="relative">
                                     <img id="profile-preview" 
-                                         src="{{ Auth::user()->profil_picture ? Storage::url(Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
+                                         src="{{ Auth::user()->profil_picture ? asset('storage/' . Auth::user()->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                                          alt="Profile" 
                                          class="w-24 h-24 rounded-full object-cover">
                                     <label for="profile-picture" class="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-50">
