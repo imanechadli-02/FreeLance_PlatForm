@@ -83,8 +83,8 @@
                             </a>
                             <form method="POST" action="{{ route('logout') }}" class="block">
                                 @csrf
-                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-gray-100" role="menuitem">
+                                    <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                     </svg>
                                     Logout
@@ -115,8 +115,8 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Active Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">3</h3>
+                        <p class="text-sm text-gray-600">All Projects</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->count() }}</h3>
                     </div>
                     <div class="bg-blue-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Completed Projects</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">8</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', 'completed')->count() }}</h3>
                     </div>
                     <div class="bg-green-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Total Investment</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$24,500</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">${{ number_format($projects->sum('budget'), 2) }}</h3>
                     </div>
                     <div class="bg-purple-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,8 +154,8 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Pending Reviews</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">2</h3>
+                        <p class="text-sm text-gray-600">Projects In Progress</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $projects->where('status', 'in_progress')->count() }}</h3>
                     </div>
                     <div class="bg-yellow-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,6 +165,8 @@
                 </div>
             </div>
         </div>
+
+        
 
         <!-- Projects Section -->
         <div class="mt-8">
@@ -443,8 +445,10 @@
 
         function openEditModal(projectId, title, description, deadline, skillsRequired, serviceId) {
             const modal = document.getElementById('editProjectModal');
-            modal.classList.remove('hidden');
-            document.getElementById('editProjectForm').action = `/client/projects/${projectId}`;
+            const form = document.getElementById('editProjectForm');
+            
+            // Set form action
+            form.action = `/client/projects/${projectId}`;
             
             // Set form values
             document.getElementById('edit_title').value = title;
@@ -456,11 +460,17 @@
             const serviceSelect = document.getElementById('edit_service_id');
             serviceSelect.value = serviceId;
             updateEditServicePrice(serviceSelect);
+            
+            // Show modal
+            modal.classList.remove('hidden');
         }
 
         function closeEditModal() {
             const modal = document.getElementById('editProjectModal');
             modal.classList.add('hidden');
+            
+            // Reset form
+            document.getElementById('editProjectForm').reset();
         }
 
         function updateEditServicePrice(select) {

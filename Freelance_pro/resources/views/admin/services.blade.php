@@ -139,23 +139,8 @@
                             <label class="block text-sm font-medium text-gray-700">Price</label>
                             <input type="number" name="price" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Category</label>
-                            <select name="category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="web">Web Development</option>
-                                <option value="mobile">Mobile Development</option>
-                                <option value="design">UI/UX Design</option>
-                                <option value="marketing">Digital Marketing</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Status</label>
-                            <select name="status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="draft">Draft</option>
-                            </select>
-                        </div>
+                        
+                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Service Image</label>
                             <input type="file" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500
@@ -198,23 +183,7 @@
                             <label class="block text-sm font-medium text-gray-700">Price</label>
                             <input type="number" name="price" id="edit_price" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Category</label>
-                            <select name="category" id="edit_category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="web">Web Development</option>
-                                <option value="mobile">Mobile Development</option>
-                                <option value="design">UI/UX Design</option>
-                                <option value="marketing">Digital Marketing</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Status</label>
-                            <select name="status" id="edit_status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="draft">Draft</option>
-                            </select>
-                        </div>
+                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Service Image</label>
                             <input type="file" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500
@@ -243,7 +212,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Total Services</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">12</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $totalServices }}</h3>
                     </div>
                     <div class="bg-indigo-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,24 +221,12 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Active Services</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">8</h3>
-                    </div>
-                    <div class="bg-green-50 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
+            
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Average Price</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$2,500</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">${{ number_format($averagePrice, 2) }}</h3>
                     </div>
                     <div class="bg-yellow-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,8 +238,8 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Total Revenue</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$45,000</h3>
+                        <p class="text-sm text-gray-600">Total Prices</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">${{ number_format($totalRevenue, 2) }}</h3>
                     </div>
                     <div class="bg-blue-50 p-3 rounded-full">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,42 +251,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <form method="GET" action="{{ route('services.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                    <input type="text" 
-                           name="search"
-                           value="{{ request('search') }}"
-                           placeholder="Search services..." 
-                           class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <select name="category" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">All Categories</option>
-                        <option value="web" {{ request('category') == 'web' ? 'selected' : '' }}>Web Development</option>
-                        <option value="mobile" {{ request('category') == 'mobile' ? 'selected' : '' }}>Mobile Development</option>
-                        <option value="design" {{ request('category') == 'design' ? 'selected' : '' }}>UI/UX Design</option>
-                        <option value="marketing" {{ request('category') == 'marketing' ? 'selected' : '' }}>Digital Marketing</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select name="status" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">All Status</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        Apply Filters
-                    </button>
-                </div>
-            </form>
-        </div>
+        
 
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -343,14 +265,7 @@
                          alt="{{ $service->name }}" 
                          class="w-full h-48 object-cover"
                          onerror="this.src='https://via.placeholder.com/400x300'">
-                    <div class="absolute top-4 right-4">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full 
-                            {{ $service->status == 'active' ? 'text-green-600 bg-green-50' : 
-                               ($service->status == 'inactive' ? 'text-red-600 bg-red-50' : 
-                               'text-yellow-600 bg-yellow-50') }}">
-                            {{ ucfirst($service->status) }}
-                        </span>
-                    </div>
+                    
                 </div>
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
@@ -358,16 +273,9 @@
                         <span class="text-2xl font-bold text-indigo-600">${{ number_format($service->price, 2) }}</span>
                     </div>
                     <p class="text-gray-600 mb-6">{{ $service->description }}</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center text-sm text-gray-500">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            {{ ucfirst($service->category) }}
-                        </div>
-                    </div>
+                    
                     <div class="mt-6 flex items-center justify-between">
-                        <button onclick="openEditModal({{ $service->id }}, '{{ $service->name }}', '{{ $service->description }}', {{ $service->price }}, '{{ $service->category }}', '{{ $service->status }}')" class="text-indigo-600 hover:text-indigo-900 flex items-center">
+                        <button onclick="openEditModal({{ $service->id }}, '{{ $service->name }}', '{{ $service->description }}', {{ $service->price }})" class="text-indigo-600 hover:text-indigo-900 flex items-center">
                             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
@@ -411,7 +319,7 @@
             document.body.style.overflow = 'auto';
         }
 
-        function openEditModal(id, name, description, price, category, status) {
+        function openEditModal(id, name, description, price) {
             document.getElementById('editServiceModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             
@@ -422,8 +330,6 @@
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_description').value = description;
             document.getElementById('edit_price').value = price;
-            document.getElementById('edit_category').value = category;
-            document.getElementById('edit_status').value = status;
         }
 
         function closeEditModal() {

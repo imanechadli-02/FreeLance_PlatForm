@@ -89,15 +89,15 @@
                             </svg>
                             Edit Profile
                         </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                Logout
-                            </button>
-                        </form>
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                                @csrf
+                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-gray-100" role="menuitem">
+                                    <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
                     </div>
                 </div>
             </div>
@@ -240,18 +240,18 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
-                                    <img src="{{ $project->client->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($project->client->name) }}" 
+                                    <img src="{{ $project->client->profil_picture ? asset('storage/' . $project->client->profil_picture) : 'https://ui-avatars.com/api/?name='.urlencode($project->client->name) }}" 
                                          alt="{{ $project->client->name }}" 
-                                         class="w-8 h-8 rounded-full mr-2">
+                                         class="w-8 h-8 rounded-full mr-2 object-cover">
                                     <div class="text-sm text-gray-900">{{ $project->client->name }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
                                 @if($project->developer)
                                 <div class="flex -space-x-2">
-                                    <img src="{{ $project->developer->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($project->developer->name) }}" 
+                                    <img src="{{ $project->developer->profil_picture ? asset('storage/' . $project->developer->profil_picture) : 'https://ui-avatars.com/api/?name='.urlencode($project->developer->name) }}" 
                                          alt="{{ $project->developer->name }}" 
-                                         class="w-8 h-8 rounded-full border-2 border-white">
+                                         class="w-8 h-8 rounded-full border-2 border-white object-cover">
                                 </div>
                                 @else
                                 <span class="text-sm text-gray-500">No developer assigned</span>
@@ -311,25 +311,7 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-500">
-                        Showing 1 to 3 of 24 results
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button class="px-3 py-1 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
-                            Previous
-                        </button>
-                        <button class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm">1</button>
-                        <button class="px-3 py-1 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">2</button>
-                        <button class="px-3 py-1 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">3</button>
-                        <button class="px-3 py-1 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
-                            Next
-                        </button>
-                    </div>
-                </div>
-            </div>
+           
         </div>
     </main>
 
@@ -451,7 +433,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching project details:', error);
-                    alert('Error loading project details. Please try again.');
+                    
                 });
         }
         

@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('profile');
     Route::put('/profile', [LoginController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [LoginController::class, 'updatePassword'])->name('profile.password.update');
 
     // Dashboard Routes
     Route::get('/client/dashboard', function () {
@@ -82,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
         
         Route::put('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
         Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
+        Route::put('/password', [AdminController::class, 'updatePassword'])->name('password.update');
 
         // Admin Projects Route
         Route::get('/projects', function () {

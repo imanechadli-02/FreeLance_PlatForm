@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -59,7 +58,7 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-4 space-y-2">
-                <a href="{{ route('developer.dashboard') }}" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
+                <a href="/developer/dashboard" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
@@ -68,7 +67,7 @@
                 <div>
                     <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg ">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2M7 7h10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                         My Projects
                         <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,9 +75,9 @@
                         </svg>
                     </button>
                     <div id="projectsList" class="hidden pl-12 space-y-1">
-                        @forelse($projects as $sidebarProject)
-                            <a href="{{ route('developer.tasks', $sidebarProject) }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
-                                {{ $sidebarProject->title }}
+                        @forelse($projects->where('developer_id', auth()->id()) as $project)
+                            <a href="{{ route('developer.tasks', $project) }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
+                                {{ $project->title }}
                             </a>
                         @empty
                             <div class="py-2 text-sm text-gray-500">
@@ -87,7 +86,7 @@
                         @endforelse
                     </div>
                 </div>
-                <a href="{{ route('developer.tasks') }}" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
+                <a href="/developer/tasks" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
@@ -116,13 +115,13 @@
                              alt="{{ Auth::user()->name }}" 
                              class="w-10 h-10 rounded-full mr-3 object-cover">
                         <div class="cursor-pointer">
-                            <div class="font-medium hover:text-indigo-600">{{ Auth::user()->name }}</div>
+                            <div class="font-medium hover:text-indigo-600" id="userNameButton">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Developer</div>
                         </div>
                     </button>
 
                     <!-- Dropdown Menu -->
-                    <div id="userMenu" class="hidden absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]">
+                    <div id="userMenu" class="hidden absolute bottom-full left-0 mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]">
                         <div class="py-1" role="menu" aria-orientation="vertical">
                             <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -532,6 +531,40 @@
                     alert('Error creating task. Please try again.');
                 });
             });
+
+            // User menu toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userNameButton = document.getElementById('userNameButton');
+            const userMenu = document.getElementById('userMenu');
+
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userMenu.classList.toggle('hidden');
+                });
+
+                // Add click event for the name
+                if (userNameButton) {
+                    userNameButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        userMenu.classList.toggle('hidden');
+                    });
+                }
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+
+                // Prevent menu from closing when clicking inside it
+                userMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
         });
 
         function updateTaskStatus(taskId, newStatus) {
@@ -574,27 +607,6 @@
             document.getElementById('addTaskModal').classList.add('hidden');
             document.getElementById('addTaskForm').reset();
         }
-
-        // User menu toggle
-        const userMenuButton = document.getElementById('userMenuButton');
-        const userMenu = document.getElementById('userMenu');
-
-        userMenuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userMenu.classList.toggle('hidden');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
-                userMenu.classList.add('hidden');
-            }
-        });
-
-        // Prevent menu from closing when clicking inside it
-        userMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
     </script>
 </body>
 </html> 

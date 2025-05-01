@@ -80,44 +80,45 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         try {
-            // Allow both admin and project owner to update
+            // Check if user is authorized to update this project
             if (auth()->user()->role !== 'admin' && $project->client_id !== auth()->id()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized action.'
-                ], 403);
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
 
             // Validate the request
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'budget' => 'required|numeric|min:0',
                 'deadline' => 'required|date|after:today',
-                'status' => 'required|in:open,in_progress,completed,cancelled',
                 'skills_required' => 'required|string',
-                'service_id' => 'required|exists:services,id'
+                'service_id' => 'required|exists:services,id',
             ]);
 
+            // Get the service to update the budget
+            $service = Service::findOrFail($request->service_id);
+            
             // Update project data
-            $project->update($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Project updated successfully.',
-                'project' => $project
+            $project->update([
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'budget' => $service->price,
+                'deadline' => $validated['deadline'],
+                'skills_required' => $validated['skills_required'],
+                'service_id' => $validated['service_id'],
             ]);
+
+            return redirect()->route('client.dashboard')
+                ->with('success', 'Project updated successfully.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'errors' => $e->errors()
-            ], 422);
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Please correct the errors below.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating the project.'
-            ], 500);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An error occurred while updating the project.');
         }
     }
 
@@ -143,47 +144,38 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
-        try {
-            // Allow both admin and project owner to edit
-            if (auth()->user()->role !== 'admin' && $project->client_id !== auth()->id()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized action.'
-                ], 403);
-            }
-
-            return response()->json([
-                'success' => true,
-                'project' => [
-                    'id' => $project->id,
-                    'title' => $project->title,
-                    'description' => $project->description,
-                    'budget' => $project->budget,
-                    'deadline' => $project->deadline->format('Y-m-d'),
-                    'status' => $project->status,
-                    'skills_required' => $project->skills_required,
-                    'service_id' => $project->service_id
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error fetching project details.'
-            ], 500);
+        // Check if user is authorized to edit this project
+        if (auth()->user()->role !== 'admin' && $project->client_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
         }
+
+        return view('client.projects.edit', compact('project'));
     }
 
     public function apply(Project $project)
     {
         try {
+            Log::info('Developer attempting to apply for project', [
+                'project_id' => $project->id,
+                'developer_id' => auth()->id(),
+                'current_status' => $project->status
+            ]);
+
             // Check if project is open
             if ($project->status !== 'open') {
+                Log::warning('Project is not open for applications', [
+                    'project_id' => $project->id,
+                    'current_status' => $project->status
+                ]);
                 return redirect()->back()->with('error', 'This project is no longer open for applications.');
             }
 
             // Check if developer has already applied
             if ($project->developer_id === auth()->id()) {
+                Log::warning('Developer has already applied', [
+                    'project_id' => $project->id,
+                    'developer_id' => auth()->id()
+                ]);
                 return redirect()->back()->with('error', 'You have already applied for this project.');
             }
 
@@ -193,10 +185,22 @@ class ProjectController extends Controller
                 'status' => 'in_progress'
             ]);
 
-            return redirect()->back()->with('success', 'Successfully applied for the project!');
+            Log::info('Project successfully assigned to developer', [
+                'project_id' => $project->id,
+                'developer_id' => auth()->id(),
+                'new_status' => 'in_progress'
+            ]);
+
+            return redirect()->route('developer.dashboard')
+                ->with('success', 'Successfully applied for the project! You can now start working on it.');
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while applying for the project.');
+            Log::error('Error applying for project', [
+                'project_id' => $project->id,
+                'developer_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'An error occurred while applying for the project: ' . $e->getMessage());
         }
     }
 

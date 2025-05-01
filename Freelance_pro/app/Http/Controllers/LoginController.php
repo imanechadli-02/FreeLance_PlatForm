@@ -113,4 +113,19 @@ class LoginController extends Controller
 
         return redirect()->route('profile')->with('success', 'Profil mis à jour avec succès !');
     }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('profile')
+            ->with('password_success', 'Password updated successfully.');
+    }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects - FreelancePro</title>
+    <title>Projects - FreelancePro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -32,12 +32,28 @@
                     </svg>
                     Dashboard
                 </a>
-                <a href="/developer/projects" class="flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Projects
-                </a>
+                <div>
+                    <button id="projectsBtn" class="w-full flex items-center px-4 py-3 text-indigo-600 bg-indigo-50 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        My Projects
+                        <svg id="projectsArrow" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="projectsList" class="hidden pl-12 space-y-1">
+                        @forelse($projects->where('developer_id', auth()->id()) as $project)
+                            <a href="{{ route('developer.tasks', $project) }}" class="block py-2 text-base font-semibold text-gray-600 hover:text-indigo-600">
+                                {{ $project->title }}
+                            </a>
+                        @empty
+                            <div class="py-2 text-sm text-gray-500">
+                                No active projects
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
                 <a href="/developer/tasks" class="flex items-center px-4 py-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -67,13 +83,13 @@
                              alt="{{ Auth::user()->name }}" 
                              class="w-10 h-10 rounded-full mr-3 object-cover">
                         <div class="cursor-pointer">
-                            <div class="font-medium hover:text-indigo-600">{{ Auth::user()->name }}</div>
+                            <div class="font-medium hover:text-indigo-600" id="userNameButton">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Developer</div>
                         </div>
                     </button>
 
                     <!-- Dropdown Menu -->
-                    <div id="userMenu" class="hidden absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div id="userMenu" class="hidden absolute bottom-full left-0 mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]">
                         <div class="py-1" role="menu" aria-orientation="vertical">
                             <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,25 +360,53 @@
             once: true
         });
 
-        // User menu toggle
-        const userMenuButton = document.getElementById('userMenuButton');
-        const userMenu = document.getElementById('userMenu');
+        // Add the same JavaScript for sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Projects dropdown toggle
+            const projectsBtn = document.getElementById('projectsBtn');
+            const projectsList = document.getElementById('projectsList');
+            const projectsArrow = document.getElementById('projectsArrow');
 
-        userMenuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userMenu.classList.toggle('hidden');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
-                userMenu.classList.add('hidden');
+            if (projectsBtn && projectsList) {
+                projectsBtn.addEventListener('click', function() {
+                    projectsList.classList.toggle('hidden');
+                    projectsArrow.classList.toggle('rotate-180');
+                });
             }
-        });
 
-        // Prevent menu from closing when clicking inside it
-        userMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
+            // User menu toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userNameButton = document.getElementById('userNameButton');
+            const userMenu = document.getElementById('userMenu');
+
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userMenu.classList.toggle('hidden');
+                });
+
+                // Add click event for the name
+                if (userNameButton) {
+                    userNameButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        userMenu.classList.toggle('hidden');
+                    });
+                }
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+
+                // Prevent menu from closing when clicking inside it
+                userMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
         });
     </script>
 </body>

@@ -69,19 +69,26 @@
             <div class="p-4 border-t">
                 <div class="relative">
                     <button id="userMenuButton" class="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2">
-                        <div class="h-12 w-12 rounded-full overflow-hidden">
-                            @if(Auth::user()->profil_picture)
-                                <img src="{{ asset(Auth::user()->profil_picture) }}" alt="Profile Picture" class="h-full w-full object-cover">
-                            @else
-                                <div class="h-full w-full bg-gray-200 flex items-center justify-center">
-                                    <span class="text-gray-500 text-xl">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                                </div>
-                            @endif
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-200">
+                                @if(Auth::user()->profil_picture)
+                                    <img src="{{ asset(Auth::user()->profil_picture) }}" 
+                                         alt="Profile Picture" 
+                                         class="h-full w-full object-cover">
+                                @else
+                                    <div class="h-full w-full flex items-center justify-center">
+                                        <span class="text-gray-500 text-lg font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        <div class="cursor-pointer ml-4">
-                            <div class="font-medium hover:text-indigo-600" id="userNameButton">{{ Auth::user()->name }}</div>
-                            <div class="text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                        <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
                         </div>
+                        <svg class="ml-2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
                     </button>
 
                     <!-- Dropdown Menu -->
@@ -92,9 +99,9 @@
                             </svg>
                             Edit Profile
                         </a>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-100 mt-1">
                             @csrf
-                            <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
@@ -144,7 +151,6 @@
                     <nav class="space-y-2">
                         <a href="#profile" class="block px-4 py-2 text-indigo-600 bg-indigo-50 rounded-lg">Profile Information</a>
                         <a href="#security" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Security Settings</a>
-                        <a href="#notifications" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Notification Preferences</a>
                     </nav>
                 </div>
             </div>
@@ -232,12 +238,28 @@
                         @csrf
                         @method('PUT')
                         
+                        @if(session('password_success'))
+                            <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                                {{ session('password_success') }}
+                            </div>
+                        @endif
+
+                        @if(session('password_error'))
+                            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                                {{ session('password_error') }}
+                            </div>
+                        @endif
+
                         <div>
                             <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
                             <input type="password" 
                                    id="current_password" 
                                    name="current_password" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('current_password') border-red-500 @enderror">
+                            @error('current_password')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
@@ -245,7 +267,11 @@
                             <input type="password" 
                                    id="password" 
                                    name="password" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('password') border-red-500 @enderror">
+                            @error('password')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
@@ -253,6 +279,7 @@
                             <input type="password" 
                                    id="password_confirmation" 
                                    name="password_confirmation" 
+                                   required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         </div>
 
@@ -265,44 +292,7 @@
                     </form>
                 </div>
 
-                <!-- Notification Preferences -->
-                <div id="notifications" class="bg-white rounded-2xl shadow-lg p-8" data-aos="fade-up">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Notification Preferences</h2>
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900">New User Registrations</h3>
-                                <p class="text-gray-600">Get notified when new users register</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                            </label>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900">New Projects</h3>
-                                <p class="text-gray-600">Receive notifications for new projects</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                            </label>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900">System Updates</h3>
-                                <p class="text-gray-600">Get notified about system updates</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </main>

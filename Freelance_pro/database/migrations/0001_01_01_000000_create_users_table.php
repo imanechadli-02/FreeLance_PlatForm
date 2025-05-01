@@ -16,9 +16,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['client', 'developer', 'admin'])->default('client');
-            $table->enum('requested_role', ['client', 'developer', 'admin'])->nullable();
+            $table->string('phone')->nullable();
+            $table->string('company_name')->nullable();
+            $table->string('company_website')->nullable();
+            $table->text('company_description')->nullable();
+            $table->string('profil_picture')->nullable();
+            $table->enum('role', ['admin', 'client', 'developer'])->default('client');
+            $table->enum('requested_role', ['admin', 'client', 'developer'])->nullable();
             $table->boolean('approved')->default(false);
+            $table->rememberToken();
             $table->timestamps();
         });
 

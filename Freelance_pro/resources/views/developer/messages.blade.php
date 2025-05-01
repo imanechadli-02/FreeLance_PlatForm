@@ -127,9 +127,9 @@
                         
                         <a href="{{ route('developer.messages.show', $project) }}" class="flex items-center p-3 {{ isset($selectedProject) && $selectedProject->id == $project->id ? 'bg-indigo-50' : 'hover:bg-gray-50' }} rounded-lg cursor-pointer">
                             <div class="relative">
-                                <img src="{{ $otherUser->profile_photo_url }}" 
+                                <img src="{{ $otherUser->profil_picture ? asset('storage/' . $otherUser->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                                      alt="{{ $otherUser->name }}" 
-                                     class="w-12 h-12 rounded-full">
+                                     class="w-12 h-12 rounded-full object-cover">
                             </div>
                             <div class="ml-4 flex-1">
                                 <div class="flex items-center justify-between">
@@ -205,7 +205,7 @@
                 <div class="p-4 border-b bg-white">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <img src="{{ $selectedProject->client->profile_photo_url }}" 
+                            <img src="{{ $selectedProject->client->profil_picture ? asset('storage/' . $selectedProject->client->profil_picture) : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }}" 
                                  alt="{{ $selectedProject->client->name }}" 
                                  class="w-10 h-10 rounded-full mr-3">
                             <div>

@@ -66,9 +66,7 @@
                         <nav class="space-y-2">
                             <a href="#profile" class="block px-4 py-2 text-indigo-600 bg-indigo-50 rounded-lg">Profile Information</a>
                             <a href="#company" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Company Details</a>
-                            <a href="#billing" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Billing Information</a>
                             <a href="#security" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Security Settings</a>
-                            <a href="#notifications" class="block px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">Notification Preferences</a>
                         </nav>
                     </div>
                 </div>
@@ -190,97 +188,65 @@
                         </form>
                     </div>
 
-                
-
-                    <!-- Billing Information -->
-                    <div id="billing" class="bg-white rounded-2xl shadow-lg p-8" data-aos="fade-up">
-                        <h2 class="text-xl font-bold text-gray-900 mb-6">Billing Information</h2>
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Payment Methods</h3>
-                                    <p class="text-gray-600">Manage your payment methods</p>
-                                </div>
-                                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                                    Add Payment Method
-                                </button>
-                            </div>
-
-                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Billing History</h3>
-                                    <p class="text-gray-600">View your past invoices</p>
-                                </div>
-                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                                    View History
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Security Settings -->
                     <div id="security" class="bg-white rounded-2xl shadow-lg p-8" data-aos="fade-up">
                         <h2 class="text-xl font-bold text-gray-900 mb-6">Security Settings</h2>
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Change Password</h3>
-                                    <p class="text-gray-600">Update your password regularly</p>
+                        <form action="{{ route('profile.password.update') }}" method="POST" class="space-y-6">
+                            @csrf
+                            @method('PUT')
+                            
+                            @if(session('password_success'))
+                                <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                                    {{ session('password_success') }}
                                 </div>
-                                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                                    Change
+                            @endif
+
+                            @if(session('password_error'))
+                                <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                                    {{ session('password_error') }}
+                                </div>
+                            @endif
+
+                            <div>
+                                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                <input type="password" 
+                                       id="current_password" 
+                                       name="current_password" 
+                                       required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('current_password') border-red-500 @enderror">
+                                @error('current_password')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                <input type="password" 
+                                       id="password" 
+                                       name="password" 
+                                       required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('password') border-red-500 @enderror">
+                                @error('password')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                                <input type="password" 
+                                       id="password_confirmation" 
+                                       name="password_confirmation" 
+                                       required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" 
+                                        class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    Update Password
                                 </button>
                             </div>
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Two-Factor Authentication</h3>
-                                    <p class="text-gray-600">Add an extra layer of security</p>
-                                </div>
-                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                                    Enable
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Notification Preferences -->
-                    <div id="notifications" class="bg-white rounded-2xl shadow-lg p-8" data-aos="fade-up">
-                        <h2 class="text-xl font-bold text-gray-900 mb-6">Notification Preferences</h2>
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Project Updates</h3>
-                                    <p class="text-gray-600">Receive notifications about project progress</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                                </label>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Quote Requests</h3>
-                                    <p class="text-gray-600">Get notified about new quote requests</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                                </label>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Messages</h3>
-                                    <p class="text-gray-600">Receive notifications for new messages</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                                </label>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>

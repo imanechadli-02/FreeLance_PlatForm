@@ -24,8 +24,16 @@ class MessageController extends Controller
         $activeProjects = collect();
         $messages = collect();
         $selectedProject = null;
+        $projects = collect();
 
         try {
+            // Get all projects for the sidebar
+            $projects = Project::where('developer_id', $user->id)
+                ->with(['client', 'tasks', 'messages' => function($query) {
+                    $query->orderBy('created_at', 'desc');
+                }])
+                ->get();
+
             // Get active projects based on user role
             $activeProjects = $user->role === 'developer' 
                 ? Project::where('developer_id', $user->id)
@@ -81,7 +89,8 @@ class MessageController extends Controller
             'conversations' => $conversations,
             'activeProjects' => $activeProjects,
             'selectedProject' => $selectedProject,
-            'messages' => $messages
+            'messages' => $messages,
+            'projects' => $projects
         ]);
     }
 
@@ -101,6 +110,13 @@ class MessageController extends Controller
         $messages = Message::where('project_id', $project->id)
             ->with(['sender', 'receiver'])
             ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Get all projects for the sidebar
+        $projects = Project::where('developer_id', $user->id)
+            ->with(['client', 'tasks', 'messages' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
             ->get();
 
         // Get active projects for the sidebar
@@ -139,7 +155,8 @@ class MessageController extends Controller
             'selectedProject' => $project,
             'messages' => $messages,
             'activeProjects' => $activeProjects,
-            'conversations' => $conversations
+            'conversations' => $conversations,
+            'projects' => $projects
         ]);
     }
 

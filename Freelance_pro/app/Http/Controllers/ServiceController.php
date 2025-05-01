@@ -19,13 +19,10 @@ class ServiceController extends Controller
             });
         }
 
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category', $request->category);
-        }
-
-        if ($request->has('status') && $request->status != '') {
-            $query->where('status', $request->status);
-        }
+        // Calculate statistics
+        $totalServices = Service::count();
+        $averagePrice = Service::avg('price');
+        $totalRevenue = Service::sum('price');
 
         // Apply sorting
         if ($request->has('sort')) {
@@ -33,7 +30,7 @@ class ServiceController extends Controller
         }
 
         $services = $query->paginate(9);
-        return view('admin.services', compact('services'));
+        return view('admin.services', compact('services', 'totalServices', 'averagePrice', 'totalRevenue'));
     }
 
     public function create()
@@ -48,8 +45,8 @@ class ServiceController extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
                 'price' => 'required|numeric|min:0',
-                'category' => 'required|string',
-                'status' => 'required|in:active,inactive,draft',
+                
+                
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
@@ -60,20 +57,20 @@ class ServiceController extends Controller
                     // Generate a unique file name
                     $fileName = time() . '_' . $originalName;
                     
-                    // Store the file
-                    $path = $request->file('image')->storeAs('services', $fileName, 'public');
+                    // Store the file in public/storage/service-picture
+                    $request->file('image')->move(public_path('storage/service-picture'), $fileName);
+                    
+                    // Save the path relative to storage
+                    $validated['image'] = 'service-picture/' . $fileName;
                     
                     // Log the storage details
                     \Log::info('Image upload attempt', [
                         'original_name' => $originalName,
                         'stored_name' => $fileName,
-                        'path' => $path,
-                        'full_path' => storage_path('app/public/' . $path),
-                        'public_path' => public_path('storage/' . $path),
-                        'file_exists' => file_exists(storage_path('app/public/' . $path))
+                        'path' => $validated['image'],
+                        'full_path' => public_path('storage/' . $validated['image']),
+                        'file_exists' => file_exists(public_path('storage/' . $validated['image']))
                     ]);
-
-                    $validated['image'] = $path;
                 } catch (\Exception $e) {
                     \Log::error('Image upload failed', [
                         'error' => $e->getMessage(),
@@ -108,17 +105,30 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'category' => 'required|string',
-            'status' => 'required|in:active,inactive,draft',
+            
+           
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         if ($request->hasFile('image')) {
+            // Delete old image if it exists
             if ($service->image) {
-                \Storage::disk('public')->delete($service->image);
+                $oldPath = public_path('storage/' . $service->image);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
-            $path = $request->file('image')->store('services', 'public');
-            $validated['image'] = $path;
+
+            // Get the original file name
+            $originalName = $request->file('image')->getClientOriginalName();
+            // Generate a unique file name
+            $fileName = time() . '_' . $originalName;
+            
+            // Store the file in public/storage/service-picture
+            $request->file('image')->move(public_path('storage/service-picture'), $fileName);
+            
+            // Save the path relative to storage
+            $validated['image'] = 'service-picture/' . $fileName;
         }
 
         $service->update($validated);

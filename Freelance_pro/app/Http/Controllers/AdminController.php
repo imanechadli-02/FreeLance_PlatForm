@@ -95,15 +95,15 @@ class AdminController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => 'required|current_password',
-            'password' => 'required|string|min:8|confirmed',
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'min:8', 'confirmed'],
         ]);
 
         $user = Auth::user();
-        $user->update([
-            'password' => Hash::make($request->password)
-        ]);
+        $user->password = Hash::make($request->password);
+        $user->save();
 
-        return redirect()->route('admin.profile')->with('success', 'Password updated successfully');
+        return redirect()->route('admin.profile')
+            ->with('password_success', 'Password updated successfully.');
     }
 }
